@@ -39,6 +39,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'index',
     'life',
+    'bodybuilding',
 )
 
 MIDDLEWARE_CLASSES = (

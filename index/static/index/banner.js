@@ -1,6 +1,4 @@
 function Banner(banner) {
-//<canvas id="banner" width="900" height="900"></canvas>
-//<div id="debug" />
     // BFS
     // Use a queue of branches and iterate over them
     // Compute child branch

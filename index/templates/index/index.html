@@ -9,18 +9,25 @@
         <script type="text/javascript" src="{% static 'index/jquery-1.11.3.min.js' %}"></script>
 
         <script type="text/javascript">
-            function init() {
+            $(document).ready(function() {
                 var banner = new Banner("banner");
 
-                $("#content").load("/life #content");
-                //history.pushState(null, null, "life");
-            }
+                {% block js %}
+                    $("#content").load("/life #content");
+                {% endblock %}
+            });
+
+            $(document).on("click", "a", function(e) {
+                e.preventDefault();
+                $("#content").load(this.href + " #content");
+                history.replaceState(null, null, this.rel);
+            });
         </script>
 
-        <title>mango coach</title>
+        <title>coach</title>
     </head>
 
-    <body onload=init();>
+    <body>
         <div id="header">
             <canvas id="banner" width="1000" height="250"></canvas>
         </div>

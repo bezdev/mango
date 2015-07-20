@@ -1,7 +1,9 @@
 {% extends "index/index.html" %}
 
-<div id="content">
-    {% block content %}
-        life.html
+    {% block js %}
+        history.pushState(null, null, "/");
     {% endblock %}
-</div>
+
+    {% block content %}
+        <a href="/bodybuilding/" rel="/bodybuilding/">bodybuilding</a>
+    {% endblock %}
