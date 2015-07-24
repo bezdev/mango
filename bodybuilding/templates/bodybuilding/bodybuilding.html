@@ -1,7 +1,11 @@
-{% extends "index/index.html" %}
-    {% block js %}
+{% extends request.is_ajax|yesno:"index/empty.html,index/index.html" %}
+    {% block jsscripts %}
+        {% load static %}
+        <script type="text/javascript" src="{% static 'bodybuilding/bodybuilding.js' %}"></script>
     {% endblock %}
 
     {% block content %}
-        <a href="/life/" rel="/life/">life</a>
+        <div id="casablanca">
+            <a href="/life/" rel="/life/">life</a>
+        </div>
     {% endblock %}

@@ -81,9 +81,14 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    },
+    'bodybuilding': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'bodybuilding/bodybuilding.sqlite3',
     }
 }
 
+DATABASE_ROUTERS = ['bodybuilding.router.BodybuildingRouter']
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/

@@ -1,9 +1,4 @@
-{% extends "index/index.html" %}
-
-    {% block js %}
-        history.pushState(null, null, "/");
-    {% endblock %}
-
+{% extends request.is_ajax|yesno:"index/empty.html,index/index.html" %}
     {% block content %}
         <a href="/bodybuilding/" rel="/bodybuilding/">bodybuilding</a>
     {% endblock %}

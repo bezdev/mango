@@ -1,3 +1,7 @@
 from django.db import models
 
-# Create your models here.
+class DumbbellBenchPress(models.Model):
+    date = models.DateField()
+    set = models.PositiveSmallIntegerField()
+    weight = models.PositiveSmallIntegerField()
+    reps = models.PositiveSmallIntegerField()
