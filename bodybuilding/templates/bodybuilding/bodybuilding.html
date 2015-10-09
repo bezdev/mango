@@ -1,11 +1,45 @@
 {% extends request.is_ajax|yesno:"index/empty.html,index/index.html" %}
-    {% block jsscripts %}
+    {% block head %}
         {% load static %}
+        <script type="text/javascript" src="{% static 'bodybuilding/graph.js' %}"></script>
         <script type="text/javascript" src="{% static 'bodybuilding/bodybuilding.js' %}"></script>
+        <link rel="stylesheet" type="text/css" href="{% static 'bodybuilding/default.css' %}" />
+    
+        <script type="text/javascript">
+            function Initialize() {
+                {% if exercise %}
+                    $("#exercises").val("{{ exercise }}");
+                {% endif %}
+
+                var exercise = $("#exercises option:selected").val();
+                var url = "{% url 'bodybuilding:bodybuilding' %}" + exercise + "/";
+                RenderData(exercise, url);
+
+                $("#exercises").change(function() {
+                    var exercise = $("#exercises option:selected").val();
+                    var url = "{% url 'bodybuilding:bodybuilding' %}" + exercise + "/";
+                    RenderData(exercise, url);
+                });
+            }
+        </script>
     {% endblock %}
 
     {% block content %}
+        <h1>THIS IS BODYBUILDING</h1>
         <div id="casablanca">
             <a href="/life/" rel="/life/">life</a>
+        </div>
+        {% csrf_token %}
+        <select id="exercises">
+            <option value="Overview">Overview</option>
+            <option value="DumbbellBenchPress">Dumbbell Bench Press</option>
+        </select>
+
+        <div id="output">
+        </div>
+
+        <div id="graph">
+        </div>
+        <div id="table">
         </div>
     {% endblock %}
