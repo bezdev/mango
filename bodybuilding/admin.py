@@ -1,3 +1,7 @@
 from django.contrib import admin
+from bodybuilding.models import Weightlifting
 
-# Register your models here.
+class WeightliftingAdmin(admin.ModelAdmin):
+    date_hierarchy = 'date'
+
+admin.site.register(Weightlifting, WeightliftingAdmin)

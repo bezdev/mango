@@ -2,7 +2,7 @@ $(document).ready(function() {
     Initialize();
 });
 
-function RenderData(exercise, url) {
+function RenderData(exercise, url, exerciseText) {
     $.ajax({
         url: url,
         type: "POST",
@@ -11,7 +11,7 @@ function RenderData(exercise, url) {
             'csrfmiddlewaretoken' : $("input[name=csrfmiddlewaretoken]").val()
         },
         error: function() {
-            document.getElementById("casablanca").style.backgroundColor = 'red';
+            document.getElementById("debug").style.backgroundColor = 'red';
             document.getElementById("output").innerText = "yikes";
             history.replaceState(null, null, url);
         },
@@ -20,13 +20,61 @@ function RenderData(exercise, url) {
             //         jsonData[i]["fields"]["date|reps|set|weight"]
             var jsonData = JSON.parse(data);
 
-            document.getElementById("casablanca").style.backgroundColor = 'green';
+            document.getElementById("debug").style.backgroundColor = 'green';
             history.replaceState(null, null, url);
-            CreateGraph(exercise, jsonData);
-            CreateTable(exercise, jsonData);
+            CreateGraph(exerciseText, jsonData);
+            CreateTable(exerciseText, jsonData);
         },
         dataType: 'json'
     });
+}
+
+function CreateGraph(exercise, data) {
+    if (data.length == 0)
+    {
+        return;
+    }
+
+    // determine the max amount of sets in the data
+    var maxSet = 0;
+    for (var i = 0; i < data.length; i++) {
+        var set = data[i]["fields"]["set"];
+        if (set > maxSet) {
+            maxSet = set;
+        }
+    }
+
+    var lines = new Array(maxSet);
+
+    // Schema: jsonData[i]["fields|model|pk"]
+    //         jsonData[i]["fields"]["date|reps|set|weight"]
+    var currentDate = data[0]["fields"]["date"];
+    var currentDateIndex = 0;
+    for (var i = 0; i < data.length; i++) {
+        // create the set line if we have to
+        if (lines[data[i]["fields"]["set"] - 1] === undefined) {
+            lines[data[i]["fields"]["set"] - 1] = [];
+        }
+
+        if (currentDate != data[i]["fields"]["date"]) {
+            currentDateIndex++;
+            currentDate = data[i]["fields"]["date"];
+        }
+
+        lines[data[i]["fields"]["set"] - 1].push({ x: currentDateIndex, xText: data[i]["fields"]["date"], y: data[i]["fields"]["reps"] * data[i]["fields"]["weight"] });
+    }
+
+    var plotGraph = new PlotGraph(1000, 500, { title: exercise, xaxis: "Date", yaxis: "Weight x Reps" });
+
+    for (var i = 0; i < lines.length; i++) {
+        plotGraph.AddLine(lines[i]);
+    }
+
+    var graphDiv = document.getElementById("graph");
+    while (graphDiv.firstChild) {
+        graphDiv.removeChild(graphDiv.firstChild);
+    }
+    graphDiv.appendChild(plotGraph.CreateSVG());
 }
 
 //   +----------+---------------+---------------+     +---------------+
@@ -35,6 +83,8 @@ function RenderData(exercise, url) {
 // 2 |  <date>  | Weight | Reps | Weight | Reps |.....| Weight | Reps |
 //   +----------+--------+------+--------+------+     +--------+------+
 function CreateTable(exercise, data) {
+    document.getElementById("graph").innerHtml = "";
+
     if (data.length == 0)
     {
         return;
@@ -122,48 +172,4 @@ function AddSetTD(row, weight, reps) {
     td = document.createElement("td");
     td.appendChild(document.createTextNode(reps));
     row.appendChild(td);
-}
-
-function CreateGraph(exercise, data) {
-    if (data.length == 0)
-    {
-        return;
-    }
-
-    // determine the max amount of sets in the data
-    var maxSet = 0;
-    for (var i = 0; i < data.length; i++) {
-        var set = data[i]["fields"]["set"];
-        if (set > maxSet) {
-            maxSet = set;
-        }
-    }
-
-    var lines = new Array(maxSet);
-
-    // Schema: jsonData[i]["fields|model|pk"]
-    //         jsonData[i]["fields"]["date|reps|set|weight"]
-    var currentDate = data[0]["fields"]["date"];
-    var currentDateIndex = 0;
-    for (var i = 0; i < data.length; i++) {
-        // create the set line if we have to
-        if (lines[data[i]["fields"]["set"] - 1] === undefined) {
-            lines[data[i]["fields"]["set"] - 1] = [];
-        }
-
-        if (currentDate != data[i]["fields"]["date"]) {
-            currentDateIndex++;
-            currentDate = data[i]["fields"]["date"];
-        }
-
-        lines[data[i]["fields"]["set"] - 1].push({ x: currentDateIndex, xText: data[i]["fields"]["date"], y: data[i]["fields"]["reps"] * data[i]["fields"]["weight"] });
-    }
-
-    var plotGraph = new PlotGraph(600, 300);
-
-    for (var i = 0; i < lines.length; i++) {
-        plotGraph.AddLine(lines[i]);
-    }
-
-    document.getElementById("graph").appendChild(plotGraph.CreateSVG());
 }

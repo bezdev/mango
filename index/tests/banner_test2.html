@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script type="text/javascript">
+            function Banner(banner) {
+                // BFS
+                // Use a queue of branches and iterate over them
+                // Compute child branch
+                // Add them to them to the queue
+                // Draw branch
+                var DrawMapleTree = function(x, y, height) {
+                    var TRUNK_LENGTH = {        min: 10,
+                                                max: 10 };
+                    var NUM_BRANCHES = {        min: 5,
+                                                max: 7 };
+                    var BRANCH_ANGLE = {        min: 20,
+                                                max: 60 };
+                    var BRANCH_MULTIPLIER = {   min: 0.5,
+                                                max: 0.5 };
+                    var BRANCH_POSITION = {     min: 0.25,
+                                                max: 0.75 };
+                    var BRANCH_DEPTH = {        min: 3,
+
+                                                max: 3 };
+                    var GROW_PER_SEC = 100;
+
+                    var getEndPoint = function(x, y, angle, length) {
+                        radAngle = angle * Math.PI / 180;
+                        return { x: Math.round(x + Math.cos(radAngle) * length),
+                                 y: Math.round(y - Math.sin(radAngle) * length) };
+                    };
+
+                    var getRandomInRange = function(range) {
+                        return Math.random() * (range.max - range.min) + range.min;
+                    };
+
+                    var branches = [];
+                    var leaves = [];
+
+                    // Add trunk as initial branch
+                    var trunk = {
+                        x: x,
+                        y: y,
+                        length: height,
+                        angle: 90,
+                        depth: 0
+                    };
+                    branches.push(trunk);
+
+                    context.strokeStyle = "#ffffff";
+                    var count = 0;
+                    var currentDepth = -1;
+                    while(branches.length > 0) {
+                        count++;
+                        var branch = branches.shift();
+
+                        if (branch.depth > currentDepth) {
+                            context.lineWidth = ((BRANCH_DEPTH.max + 1) - branch.depth);
+                            context.beginPath();
+                            currentDepth = branch.depth;
+                        }
+
+                        var endPoint = getEndPoint(branch.x, branch.y, branch.angle, branch.length)
+                        context.moveTo(branch.x, branch.y);
+                        context.lineTo(endPoint.x, endPoint.y);
+
+                        // Branch roulette
+                        if (branch.depth < BRANCH_DEPTH.max) {
+                            //  Create Children
+                            var numBranches = getRandomInRange(NUM_BRANCHES);
+                            for (var i = 0; i < numBranches; i++) {
+                                var newBranchStartPoint = getEndPoint(branch.x, branch.y, branch.angle, branch.length * getRandomInRange(BRANCH_POSITION));
+                                var newLength = getRandomInRange(BRANCH_MULTIPLIER) * branch.length;
+                                var newAngle = (Math.random() < 0.5 ? -1 : 1) * getRandomInRange(BRANCH_ANGLE);
+
+                                branches.push({
+                                    x: newBranchStartPoint.x,
+                                    y: newBranchStartPoint.y,
+                                    length: newLength,
+                                    angle: branch.angle + newAngle,
+                                    depth: branch.depth + 1
+                                });
+                            }
+                        } else {
+                            leaves.push({x: endPoint.x, y: endPoint.y });
+                        }
+
+                        if (!branches[0] || branches[0].depth > currentDepth) {
+                            context.stroke();
+                            context.closePath();
+                        }
+                    }
+
+                    context.globalAlpha = 0.5;
+                    while(leaves.length > 0) {
+                    context.beginPath();
+                        var leaf = leaves.shift();
+
+                        var r = "ff";
+                        var g = (Math.round(Math.random() * getRandomInRange({ min: 100, max: 255 }))).toString(16);
+                        var b = "00";
+                        context.strokeStyle = "#" + r + g + b;
+                        context.fillStyle = "#" + r + g + b;
+
+                        context.arc(leaf.x, leaf.y, 10, 0, 2 * Math.PI, false);
+                        context.fill();
+                        context.stroke();
+                        context.closePath();
+                    }
+
+                    context.globalAlpha = 1;
+                }
+
+                var canvas = document.getElementById(banner)
+                var context = canvas.getContext("2d");
+                context.clearRect(0, 0, canvas.width, canvas.height);
+
+                DrawMapleTree(250, 500, 400);
+            }
+
+            function init() {
+                var banner = new Banner("banner");
+            }
+        </script>
+
+        <titlebanner</title>
+    </head>
+
+    <body onload=init();>
+        <canvas id="banner" width="500" height="500" style="background-color: #000000;"></canvas>
+    </body>
+</html>

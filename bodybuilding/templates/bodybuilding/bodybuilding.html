@@ -12,34 +12,32 @@
                 {% endif %}
 
                 var exercise = $("#exercises option:selected").val();
+                var exerciseText = $("#exercises option:selected").text();
                 var url = "{% url 'bodybuilding:bodybuilding' %}" + exercise + "/";
-                RenderData(exercise, url);
+                RenderData(exercise, url, exerciseText);
 
                 $("#exercises").change(function() {
                     var exercise = $("#exercises option:selected").val();
+                    var exerciseText = $("#exercises option:selected").text();
                     var url = "{% url 'bodybuilding:bodybuilding' %}" + exercise + "/";
-                    RenderData(exercise, url);
+                    RenderData(exercise, url, exerciseText);
                 });
             }
         </script>
     {% endblock %}
 
     {% block content %}
-        <h1>THIS IS BODYBUILDING</h1>
-        <div id="casablanca">
+        <div id="debug">
             <a href="/life/" rel="/life/">life</a>
         </div>
         {% csrf_token %}
         <select id="exercises">
-            <option value="Overview">Overview</option>
-            <option value="DumbbellBenchPress">Dumbbell Bench Press</option>
-        </select>
-
-        <div id="output">
-        </div>
-
-        <div id="graph">
-        </div>
-        <div id="table">
-        </div>
+            <option value="Overall">Overall</option>
+            {% for exercise in exercises %}
+                <option value="{{ exercise }}">{{ exercise }}</option>
+            {% endfor %}
+        </select>   
+        <div id="graph"></div>
+        <div id="table"></div>
+        <div id="output"></div>
     {% endblock %}

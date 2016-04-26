@@ -20,4 +20,5 @@ urlpatterns = [
     url(r'^$', include('index.urls', namespace='index')),
     url(r'^life/', include('life.urls', namespace='life')),
     url(r'^bodybuilding/', include('bodybuilding.urls', namespace='bodybuilding')),
+    url(r'^admin/', include(admin.site.urls)),
 ]

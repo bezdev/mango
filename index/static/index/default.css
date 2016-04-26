@@ -15,6 +15,7 @@ p
 body
 {
     font: 85% arial, sans-serif;
+    color: #ffffff;
     background-color: #333333;
 }
 
@@ -39,7 +40,7 @@ body
     width: 1000px;
     height: 800px; /* auto */
     text-align: left;
-    background-color: #ffffff;
+    background-color: #161616;
 }
 
 #content h1
@@ -47,7 +48,7 @@ body
     font-family: Verdana;
     margin: 0;
     text-align: center;
-    color: #000000;
+    color: #ffffff;
 }
 
 #footer

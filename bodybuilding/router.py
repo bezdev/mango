@@ -16,6 +16,4 @@ class BodybuildingRouter(object):
         return None
 
     def allow_migrate(self, db, app_label, model=None, **hints):
-        if app_label == 'bodybuilding':
-            return db == 'bodybuilding'
-        return None
+        return True

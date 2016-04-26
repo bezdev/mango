@@ -1,11 +1,11 @@
-function PlotGraph(width, height) {
+function PlotGraph(width, height, labels) {
     var that = this;
 
-    var padding = { left: 10, top: 10, right: 10, bottom: 10 };
+    var padding = { left: 100, top: 100, right: 100, bottom: 100 };
 
     var defaultColors = [ "#FF0000", "#008000", "#0000FF", "#FFA500", "#FFFF00", "#4B0082", "#EE82EE" ]; // ROYGBIV
-    var xAxis = { min: 0, max: 0, width: width };
-    var yAxis = { min: 0, max: 0, height: height };
+    var xAxis = { min: 0, max: 0, width: width - padding.left - padding.right };
+    var yAxis = { min: 0, max: 0, height: height - padding.top - padding.bottom };
 
     var lines = [];
 
@@ -50,6 +50,15 @@ function PlotGraph(width, height) {
         }
     };
 
+    var CreateLabels = function() {
+        var labelgroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        labelgroup.appendChild(CreateSVGText(width / 2, padding.top / 2, labels.title, 30, 0));
+        labelgroup.appendChild(CreateSVGText(width / 2, height - padding.bottom / 2, labels.xaxis, 18, 0));
+        labelgroup.appendChild(CreateSVGText(padding.left / 2, height / 2, labels.yaxis, 18, -90));
+
+        return labelgroup;
+    };
+
     var CreateAxis = function() {
         var axis = document.createElementNS("http://www.w3.org/2000/svg", "g");
         // draw x-axis
@@ -57,6 +66,8 @@ function PlotGraph(width, height) {
         // draw y-axis
         axis.appendChild(CreateSVGLine(0, yAxis.min, 0, yAxis.max));
 
+        var ticks = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        
         return axis;
     };
 
@@ -76,13 +87,28 @@ function PlotGraph(width, height) {
         return plotData;
     };
 
+    var CreateSVGText = function(x, y, text, size, rotate) {
+        var svgtext = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        svgtext.setAttribute("text-anchor", "middle");
+        svgtext.setAttribute("x", x);
+        svgtext.setAttribute("y", y);
+        svgtext.setAttribute("font-size", size);
+        svgtext.setAttribute("transform", "rotate(" + rotate + " " + x + " " + y + ")");
+        svgtext.setAttribute("fill", "white");
+
+        var textNode = document.createTextNode(text);
+        svgtext.appendChild(textNode);
+
+        return svgtext;
+    };
+
     var CreateSVGLine = function(x1, y1, x2, y2) {
         var line = document.createElementNS("http://www.w3.org/2000/svg", "line");
         line.setAttribute("x1", getRealX(x1));
         line.setAttribute("y1", getRealY(y1));
         line.setAttribute("x2", getRealX(x2));
         line.setAttribute("y2", getRealY(y2));
-        line.setAttribute("stroke", "black");
+        line.setAttribute("stroke", "white");
 
         return line;
     };
@@ -117,8 +143,8 @@ function PlotGraph(width, height) {
     };
 
     this.Clear = function() {
-        var xAxis = { min: 0, max: 0, width: width };
-        var yAxis = { min: 0, max: 0, height: height };
+        var xAxis = { min: 0, max: 0, width: width - padding.left - padding.right };
+        var yAxis = { min: 0, max: 0, height: height - padding.top - padding.bottom };
 
         var lines = [];
 
@@ -149,13 +175,15 @@ function PlotGraph(width, height) {
 
         ComputeOrigin();
 
+        svg.appendChild(CreateLabels());
+
         svg.appendChild(CreateAxis());
 
         svg.appendChild(CreatePlotData());
 
-        svg.setAttribute("width", xAxis.width + padding.left + padding.right);
-        svg.setAttribute("height", yAxis.height + padding.top + padding.bottom);
-        svg.setAttribute("style", "border: 1px solid black");
+        svg.setAttribute("width", width);
+        svg.setAttribute("height", height);
+        //svg.setAttribute("style", "border: 1px solid white");
 
         return svg;
     };

@@ -1,7 +1,15 @@
 from django.db import models
 
-class DumbbellBenchPress(models.Model):
+class Weightlifting(models.Model):
+    exercise = models.CharField(max_length = 50)
     date = models.DateField()
     set = models.PositiveSmallIntegerField()
     weight = models.PositiveSmallIntegerField()
     reps = models.PositiveSmallIntegerField()
+
+    def __str__(self):
+        return self.exercise + " " + unicode(self.date) + " " + unicode(self.set) + " " + unicode(self.reps) + "x" + unicode(self.weight) 
+
+    class Meta:
+        managed = False
+        db_table = "weightlifting"
