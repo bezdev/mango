@@ -66,7 +66,10 @@ function PlotGraph(width, height, labels) {
         // draw y-axis
         axis.appendChild(CreateSVGLine(0, yAxis.min, 0, yAxis.max));
 
+        // draw the ticks
         var ticks = document.createElementNS("http://www.w3.org/2000/svg", "g");
+
+        console.debug(lines);
         
         return axis;
     };
@@ -176,14 +179,12 @@ function PlotGraph(width, height, labels) {
         ComputeOrigin();
 
         svg.appendChild(CreateLabels());
-
         svg.appendChild(CreateAxis());
-
         svg.appendChild(CreatePlotData());
 
         svg.setAttribute("width", width);
         svg.setAttribute("height", height);
-        //svg.setAttribute("style", "border: 1px solid white");
+        // svg.setAttribute("style", "border: 1px solid white");
 
         return svg;
     };

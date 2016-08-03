@@ -1,0 +1,5 @@
+AddHandler fcgid-script .fcgi
+RewriteEngine On
+RewriteCond %{HTTP_HOST} ^(.+\.|)keefrogers.com
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^(.*)$ keefrogers.fcgi/$1 [QSA,L]
