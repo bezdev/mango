@@ -16,12 +16,12 @@ body
 {
     font: 85% arial, sans-serif;
     color: #ffffff;
-    background-color: #333333;
+    background-color: #f9f9f9;
 }
 
 #header
 {
-    margin: 20px auto 0 auto;
+    margin: 0 auto 0 auto;
     width: 1000px;
     height: 250px;
 }
@@ -30,7 +30,6 @@ body
 {
     float: left;
     background-color: #000000;
-    width: 1000px;
     height: 250px;
 }
 
@@ -38,9 +37,9 @@ body
 {
     margin: 0 auto;
     width: 1000px;
-    height: 800px; /* auto */
+    height: auto;
     text-align: left;
-    background-color: #161616;
+    background-color: #f9f9f9;
 }
 
 #content h1
@@ -55,7 +54,7 @@ body
 {
     height: 20px;
     border-top: 3px solid #ffffff;
-    background-color: #161616;
+    background-color: #a9a9a9;
 }
 
 #footer h4

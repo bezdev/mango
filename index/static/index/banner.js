@@ -6,7 +6,6 @@ function Banner(banner) {
     var DrawStar = function(x, y) {
         var INNER_STAR_RADIUS = { min: 0, max: 1 };
         var OUTER_STAR_RADIUS = { min: 1, max: 2 };
-        var STAR_RADIUS = { min: 3, max: 3 };
 
         var outerStarRadius = GetRandomInRange(OUTER_STAR_RADIUS)
         var gradient = context.createRadialGradient(x, y, GetRandomInRange(INNER_STAR_RADIUS), x, y, outerStarRadius);
@@ -18,7 +17,7 @@ function Banner(banner) {
         var b = (Math.round(Math.random() * GetRandomInRange({ min: 100, max: 255 }))).toString(16);
         if (b.length == 1) { b = "0" + b; }  // needs to be 2 digits, so prefix with '0' if necessary
         var outerColor = "#" + r + g + b;
-        gradient.addColorStop(0, 'white');
+        gradient.addColorStop(0, "#ffffff");
         gradient.addColorStop(1, outerColor);
 
         context.beginPath();
@@ -32,8 +31,8 @@ function Banner(banner) {
     var DrawGrass = function(x, y, height) {
         var TOP_OFFSET = { min: 2,  max: 5 };
 
-        context.fillStyle="green";
-        context.strokeStyle="green";
+        context.fillStyle = GRASS_COLOR;
+        context.strokeStyle= GRASS_COLOR;
         context.beginPath();
         context.moveTo(x, y);
         var xOffsetTop = (Math.random() < 0.5 ? -1 : 1) * GetRandomInRange(TOP_OFFSET);
@@ -53,8 +52,9 @@ function Banner(banner) {
         var BRANCH_MULTIPLIER =     { min: 0.5,  max: 0.5  };
         var BRANCH_POSITION =       { min: 0.25, max: 0.75 };
         var BRANCH_DEPTH =          { min: 3,    max: 3    };
-        var LEAF_RADIUS = 13;
+        var LEAF_RADIUS = 20;
         var GROW_SPEED = 300;
+        var BRANCH_COLOR = "#ffffff";
 
         var DrawLine = function(p1, p2) {
             context.moveTo(p1.x, p1.y);
@@ -192,8 +192,8 @@ function Banner(banner) {
                 context.fill();
             }
 
-            context.strokeStyle = "#ffffff";
-            context.fillStyle = "#ffffff";
+            context.strokeStyle = BRANCH_COLOR;
+            context.fillStyle = BRANCH_COLOR;
             context.globalAlpha = 1;
 
             // document.getElementById("fps").innerText = 1000 / (currentTime - lastTime);
@@ -229,7 +229,7 @@ function Banner(banner) {
         };
         branches.push(trunk);
 
-        context.strokeStyle = "#ffffff";
+        context.strokeStyle = BRANCH_COLOR;
 
         requestAnimationFrame(Render);
     };
@@ -241,15 +241,31 @@ function Banner(banner) {
     var context = canvas.getContext("2d");
     context.clearRect(0, 0, canvas.width, canvas.height);
 
+    // draw sky
+    var gradientHeight = canvas.height - 50;
+    var sky = context.createLinearGradient(0, 0, 0, gradientHeight);
+    sky.addColorStop(0, "#150c21");
+    sky.addColorStop(1, "#81387d");
+    context.fillStyle = sky;
+    context.fillRect(0, 0, canvas.width, gradientHeight);
+
+    sky = context.createLinearGradient(0, gradientHeight, 0, canvas.height);
+    sky.addColorStop(0, "#81387d");
+    sky.addColorStop(1, "#e03569");
+    context.fillStyle = sky;
+    context.fillRect(0, gradientHeight, canvas.width, canvas.height);
+
+/*
     // draw stars
-    var starsLeft = 2000;
+    var starsLeft = 500;
     while (starsLeft > 0) {
         DrawStar(GetRandomInRange({ min: 0, max: canvas.width }), GetRandomInRange({ min: 0, max: canvas.height }));
         starsLeft--;
     }
+*/
 
     // draw maples
-    var MAPLE_SPAWN_DELAY =    { min: 100, max: 1750 };
+    var MAPLE_SPAWN_DELAY =    { min: 500, max: 1750 };
     var MAPLE_SPAWN_POSITION = { min: 100, max: 900 };
     var mapleTreesLeft = 13;
     var currentSpawnTime = 0;
@@ -264,7 +280,8 @@ function Banner(banner) {
 
     // draw grass
     var GRASS_SPAWN_POSITION = { min: 0, max: canvas.width };
-    var GRASS_HEIGHT         = { min: 1,   max: 10  }; 
+    var GRASS_HEIGHT         = { min: 1,   max: 15  };
+    var GRASS_COLOR          = "#ffffff";
     var grassLeft = 1000;
     while (grassLeft > 0) {
         DrawGrass(GetRandomInRange(GRASS_SPAWN_POSITION), canvas.height, GetRandomInRange(GRASS_HEIGHT));
