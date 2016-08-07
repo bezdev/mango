@@ -11,5 +11,4 @@ class Weightlifting(models.Model):
         return self.exercise + " " + unicode(self.date) + " " + unicode(self.set) + " " + unicode(self.reps) + "x" + unicode(self.weight) 
 
     class Meta:
-        managed = False
         db_table = "weightlifting"

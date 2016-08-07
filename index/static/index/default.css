@@ -15,7 +15,7 @@ p
 body
 {
     font: 85% arial, sans-serif;
-    color: #ffffff;
+    color: #000000;
     background-color: #f9f9f9;
 }
 
@@ -52,14 +52,14 @@ body
 
 #footer
 {
-    height: 20px;
+    height: auto;
     border-top: 3px solid #ffffff;
     background-color: #a9a9a9;
 }
 
 #footer h4
 {
-    padding-top: 2px;
+    padding: 2px;
     text-align: center;
     color: #ffffff;
 }
