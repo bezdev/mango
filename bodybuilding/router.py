@@ -10,7 +10,7 @@ class BodybuildingRouter(object):
         return None
 
     def allow_relation(self, obj1, obj2, **hints):
-        if obj1._meta.app_label == 'bodybuilding' or \
+        if obj1._meta.app_label == 'bodybuilding' or
            obj2._meta.app_label == 'bodybuilding':
            return True
         return None

@@ -11,17 +11,10 @@
                     $("#exercises").val("{{ exercise }}");
                 {% endif %}
 
-                var exercise = $("#exercises option:selected").val();
-                var exerciseText = $("#exercises option:selected").text();
-                var url = "{% url 'bodybuilding:bodybuilding' %}" + exercise + "/";
-                RenderData(exercise, url, exerciseText);
-
-                $("#exercises").change(function() {
-                    var exercise = $("#exercises option:selected").val();
-                    var exerciseText = $("#exercises option:selected").text();
-                    var url = "{% url 'bodybuilding:bodybuilding' %}" + exercise + "/";
-                    RenderData(exercise, url, exerciseText);
-                });
+                dates = JSON.parse('{{ workouts | escapejs }}');
+                sets = JSON.parse('{{ sets | escapejs }}');
+                cardio = JSON.parse('{{ cardio | escapejs }}');
+                RenderData();
             }
         </script>
     {% endblock %}
@@ -30,14 +23,8 @@
         <div id="debug">
             <a href="/life/" rel="/life/">life</a>
         </div>
-        {% csrf_token %}
-        <select id="exercises">
-            <option value="Overall">Overall</option>
-            {% for exercise in exercises %}
-                <option value="{{ exercise }}">{{ exercise }}</option>
-            {% endfor %}
-        </select>   
-        <div id="graph"></div>
-        <div id="table"></div>
+        <select id="datesSelect"></select>
+        <br />
+        <div id="workoutlog"></div>
         <div id="output"></div>
     {% endblock %}

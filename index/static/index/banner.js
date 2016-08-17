@@ -281,7 +281,7 @@ function Banner(banner) {
     // draw grass
     var GRASS_SPAWN_POSITION = { min: 0, max: canvas.width };
     var GRASS_HEIGHT         = { min: 1,   max: 15  };
-    var GRASS_COLOR          = "#ffffff";
+    var GRASS_COLOR          = "#f9f9f9";
     var grassLeft = 1000;
     while (grassLeft > 0) {
         DrawGrass(GetRandomInRange(GRASS_SPAWN_POSITION), canvas.height, GetRandomInRange(GRASS_HEIGHT));
