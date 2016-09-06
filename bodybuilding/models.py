@@ -3,6 +3,9 @@ from django.utils import timezone
 
 class WorkoutSession(models.Model):
     date = models.DateField(default=timezone.now)
+    weight = models.DecimalField(max_digits = 4, decimal_places = 1)
+    startTime = models.PositiveSmallIntegerField()
+    endTime = models.PositiveSmallIntegerField()
 
     def __str__(self):
         return unicode(self.date)
@@ -29,7 +32,7 @@ class WeightTraining(models.Model):
 class Set(models.Model):
     training = models.ForeignKey(WeightTraining)
     set = models.PositiveSmallIntegerField()
-    weight = models.PositiveSmallIntegerField()
+    weight = models.DecimalField(max_digits = 5, decimal_places = 1)
     reps = models.PositiveSmallIntegerField()
 
     def __str__(self):
@@ -39,7 +42,7 @@ class CardioTraining(models.Model):
     workout = models.ForeignKey(WorkoutSession)
     exercise = models.ForeignKey(CardioExercise)
     time = models.DurationField()
-    distance = models.FloatField()
+    distance = models.DecimalField(max_digits = 4, decimal_places = 1)
 
     def __str__(self):
         return unicode(self.exercise) + " Time: " + unicode(self.time) + " Distance: " + unicode(self.distance) + "mi"

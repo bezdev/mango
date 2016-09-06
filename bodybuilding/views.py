@@ -1,10 +1,16 @@
 import json
+import decimal
 from django.core import serializers
 from django.http import JsonResponse
 from django.shortcuts import redirect
 from django.shortcuts import render
 
 from .models import WorkoutSession, WeightExercise, CardioExercise, WeightTraining, Set, CardioTraining
+
+def decimal_default(obj):
+    if isinstance(obj, decimal.Decimal):
+        return float(obj)
+    raise TypeError
 
 # Set.objects.filter(exercise__exercise__name__contains='Dumbbell Bench Press').order_by('exerice__workout__date', 'set')
 # Set.objects.all().order_by('exercise__exercise', 'exercise__workout__date', 'set')
@@ -24,20 +30,20 @@ def bodybuilding(request):
         workoutSessionsList.append({'date' : str(workoutSession)})
     workoutSessionsList
     jsonWorkoutSessions = json.dumps(workoutSessionsList)
-    print jsonWorkoutSessions
+
     #weightExercises = WeightExercise.objects.values_list('name', flat=True).distinct()
-    sets = Set.objects.all().order_by('training__workout__date', 'training__exercise', 'set').select_related()
+    sets = Set.objects.all().order_by('training__workout__date', 'training__id', 'set').select_related()
     setsList = []
     for set in sets:
         setsList.append({'date' : str(set.training.workout.date), 'name' : set.training.exercise.name, 'set' : set.set, 'weight' : set.weight, 'reps' : set.reps})
-    jsonSets = json.dumps(setsList)
+    jsonSets = json.dumps(setsList, default=decimal_default)
 
     #cardioExercises = CardioExercise.objects.values_list('name', flat=True).distinct()
     cardioTrainings = CardioTraining.objects.all().order_by('workout__date', 'exercise').select_related()
     cardioTrainingsList = []
     for cardioTraining in cardioTrainings:
         cardioTrainingsList.append({'date' : str(cardioTraining.workout.date), 'name' : cardioTraining.exercise.name, 'time' : str(cardioTraining.time), 'distance' : cardioTraining.distance})
-    jsonCardioTrainings = json.dumps(cardioTrainingsList)
+    jsonCardioTrainings = json.dumps(cardioTrainingsList, default=decimal_default)
 
     return render(request, 'bodybuilding/bodybuilding.html', { "workouts" : jsonWorkoutSessions, "sets" : jsonSets, "cardio" : jsonCardioTrainings })
 

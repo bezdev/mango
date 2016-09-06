@@ -3,6 +3,9 @@ var sets;
 var cardio;
 var maxSet;
 var datesList = [];
+var currDateIndex;
+
+var workoutLogDiv;
 
 Array.prototype.peek = function() {
     return this[this.length - 1];
@@ -18,16 +21,8 @@ function RenderData() {
         datesList.push(dates[i].date);
     }
 
-    // determine the max amount of sets in the data
-    maxSet = 0;
-    for (var i = 0; i < sets.length; i++) {
-        if (sets[i].set > maxSet) {
-            maxSet = sets[i].set;
-        }
-    }
-
     CreateWorkoutLogNavigation();
-    CreateWorkoutLog(datesList.peek());
+    CreateWorkoutTable(datesList.peek());
 
     /*
     $.ajax({
@@ -66,60 +61,137 @@ function CreateWorkoutLogNavigation()
         $('#datesSelect').append(option);
     }
 
+    currDateIndex = dates.length - 1;
+
     $('#datesSelect').change(function() {
         var date = $("#datesSelect option:selected").val();
-        CreateWorkoutLog(date);
+        currDateIndex = $("#datesSelect").prop('selectedIndex')
+        //var date = dates[dates.length - currDateIndex - 1];
+        CreateWorkoutTable(date);
+    });
+
+    $('#navLeft').click(function() {
+        currDateIndex = (currDateIndex == 0) ? dates.length - 1 : --currDateIndex;
+        var date = dates[currDateIndex].date;
+        $("#datesSelect").val(date);
+        CreateWorkoutTable(date);
+    });
+
+    $('#navRight').click(function() {
+        currDateIndex = (currDateIndex == dates.length - 1) ? 0 : ++currDateIndex;
+        var date = dates[currDateIndex].date;
+        $("#datesSelect").val(date);
+        CreateWorkoutTable(date);
     });
 }
 
-function CreateWorkoutLog(date) {
+var randomColors = false;
+function CreateWorkoutTable(date) {
+    // Clear the existing table.
+    workoutLogDiv = document.getElementById("workoutlog");
+    while (workoutLogDiv.firstChild) {
+        workoutLogDiv.removeChild(workoutLogDiv.firstChild);
+    }
+
+    CreateWeightTrainingTable(date);
+    CreateCardioTable(date);
+
+    if (randomColors)
+    {
+        var randomHeaderColor = randomColor();
+        var randomDataAColor = randomColor();
+        var randomDataBColor = randomColor();
+        var elements = document.getElementsByClassName("headerData");
+        for (var i = 0; i < elements.length; i++) {
+            elements[i].style.backgroundColor = randomHeaderColor;
+        }
+
+        var elements = document.getElementsByClassName("dataA");
+        for (var i = 0; i < elements.length; i++) {
+            elements[i].style.backgroundColor = randomDataAColor;
+        }
+
+        var elements = document.getElementsByClassName("dataB");
+        for (var i = 0; i < elements.length; i++) {
+            elements[i].style.backgroundColor = randomDataBColor;
+        }
+
+        var elements = document.getElementsByClassName("cardioData");
+        for (var i = 0; i < elements.length; i++) {
+            elements[i].style.backgroundColor = randomDataAColor;
+        }
+    }
+}
+
+function CreateWeightTrainingTable(date) {
     var table = document.createElement("table");
-    var tbody = undefined;
+    var thead;
+    var tbody;
     var tr;
     var td;
 
-    // add weight training
-    var currentName = undefined;
+    // Determine the max amount of sets in the data for this data
+    maxSet = 0;
+    for (var i = 0; i < sets.length; i++) {
+        if (sets[i].date !== date) {
+            continue;
+        }
+
+        if (sets[i].set > maxSet) {
+            maxSet = sets[i].set;
+        }
+    }
     var numSetsLeft = maxSet;
+    var currentExerciseName;
+
+    // Iterate through all the sets and fill in the table
     for (var i = 0; i < sets.length; i++) {
         // Only display data for the current day
         if (sets[i].date !== date) {
             continue;
         }
 
-        if (sets[i].name !== currentName) {
-            // Initialize the header if necessary
-            if (currentName === undefined) {
-                // | Weight Training | Set 1 | Set 2 | ... | Set 3 |
-                if (tbody === undefined) {
-                    tbody = document.createElement("tbody");
-                }
-                tr = document.createElement("tr");
+        // Initialize the header if necessary
+        if (thead === undefined) {
+            thead = document.createElement("thead");
+            tr = document.createElement("tr");
+            tr.className = "headerData";
+            td = document.createElement("td");
+            td.appendChild(document.createTextNode("Weight Training"));
+            tr.appendChild(td);
+            for (var j = 1; j <= maxSet; j++) {
                 td = document.createElement("td");
-                tr.className = "headerData";
-                td.appendChild(document.createTextNode("Weight Training"));
+                td.colSpan = "2";
+                td.appendChild(document.createTextNode("Set " + j));
                 tr.appendChild(td);
-                for (var j = 1; j <= maxSet; j++) {
-                    td = document.createElement("td");
-                    td.colSpan = "2";
-                    td.appendChild(document.createTextNode("Set " + j));
-                    tr.appendChild(td);
-                }
-                tbody.appendChild(tr);
+            }
+            thead.appendChild(tr);
 
-                // | Exercise | Weight | Reps | ...
-                tr = document.createElement("tr");
-                tr.className = "headerData";
+            // | Exercise | Weight | Reps | ...
+            tr = document.createElement("tr");
+            tr.className = "headerData";
+            td = document.createElement("td");
+            td.appendChild(document.createTextNode("Exercise"));
+            tr.appendChild(td);
+            for (var j = 1; j <= maxSet; j++) {
                 td = document.createElement("td");
-                td.className = "exerciseColumn";
-                td.appendChild(document.createTextNode("Exercise"));
+                td.appendChild(document.createTextNode("Weight"));
                 tr.appendChild(td);
-                for (var j = 1; j <= maxSet; j++) {
-                    AddSetTD(tr, "Weight", "Reps");
-                }
-                tbody.appendChild(tr);
-            } else {
-                // Finish the previous row
+                td = document.createElement("td");
+                td.appendChild(document.createTextNode("Reps"));
+                tr.appendChild(td);
+            }
+            thead.appendChild(tr);
+
+            table.appendChild(thead);
+
+            tbody = document.createElement("tbody")
+        }
+
+        // See if we need to start a new row.
+        if (sets[i].name !== currentExerciseName) {
+            // Finish the previous row if needed.
+            if (currentExerciseName !== undefined) {
                 for (var j = 0; j < numSetsLeft; j++) {
                     AddSetTD(tr, " ", " ");
                 }
@@ -127,15 +199,19 @@ function CreateWorkoutLog(date) {
             }
 
             numSetsLeft = maxSet;
-            currentName = sets[i].name;
+            currentExerciseName = sets[i].name;
 
+            // Get started on the next row, start with the exercise column.
             tr = document.createElement("tr");
             td = document.createElement("td");
-            td.className = "exerciseColumn";
-            td.appendChild(document.createTextNode(currentName));
+            td.className = "dataA";
+            td.className += " exerciseColumn";
+            isDataA = true;
+            td.appendChild(document.createTextNode(currentExerciseName));
             tr.appendChild(td);
         }
 
+        // Add the current set
         AddSetTD(tr, sets[i].weight, sets[i].reps)
         numSetsLeft--;
     }
@@ -145,67 +221,68 @@ function CreateWorkoutLog(date) {
             AddSetTD(tr, " ", " ");
         }
         tbody.appendChild(tr);
+        table.appendChild(tbody);
     }
+    workoutLogDiv.appendChild(table);
+}
 
-    // add cardio
+function CreateCardioTable(date) {
+    var table = document.createElement("table");
+    var thead;
+    var tbody;
+    var tr;
+    var td;
 
-    currentName = undefined;
-    var notesSpan;
+    var currentExerciseName;
     for (var i = 0; i < cardio.length; i++) {
         // Only display data for the current day
         if (cardio[i].date !== date) {
             continue;
         }
 
-        if (cardio[i].name !== currentName) {
+        // Initialize the header if necessary
+        if (thead === undefined) {
+            thead = document.createElement("thead");
+            tr = document.createElement("tr");
+            tr.className = "headerData";
+            td = document.createElement("td");
+            td.appendChild(document.createTextNode("Cardio"));
+            tr.appendChild(td);
+            td = document.createElement("td");
+            td.appendChild(document.createTextNode("Time"));
+            tr.appendChild(td);
+            td = document.createElement("td");
+            td.appendChild(document.createTextNode("Distance"));
+            tr.appendChild(td);
+            td = document.createElement("td");
+            td.appendChild(document.createTextNode("Notes"));
+            tr.appendChild(td);
+            thead.appendChild(tr);
+
+            table.appendChild(thead);
+
+            tbody = document.createElement("tbody")
+        }
+
+        if (cardio[i].name !== currentExerciseName) {
             // Initialize the header if necessary
-            if (currentName === undefined) {
-                if (tbody === undefined) {
-                    tbody = document.createElement("tbody");
-                    notesSpan = 1;
-                } else {
-                    notesSpan = (maxSet * 2) - 2;
-                }
-                tr = document.createElement("tr");
-                tr.className = "headerData";
-                td = document.createElement("td");
-                td.appendChild(document.createTextNode("Cardio"));
-                tr.appendChild(td);
-                td = document.createElement("td");
-                td.appendChild(document.createTextNode("Time"));
-                tr.appendChild(td);
-                td = document.createElement("td");
-                td.appendChild(document.createTextNode("Distance"));
-                tr.appendChild(td);
-                td = document.createElement("td");
-                td.colSpan = notesSpan.toString()
-                td.appendChild(document.createTextNode("Notes"));
-                tr.appendChild(td);
-                tbody.appendChild(tr);
-            } else {
+            if (currentExerciseName !== undefined) {
                 // Close the previous row off
                 tbody.appendChild(tr);
             }
 
-            currentName = cardio[i].name;
+            currentExerciseName = cardio[i].name;
 
             tr = document.createElement("tr");
         }
 
-        AddCardioRow(tr, currentName, cardio[i].time, cardio[i].distance, " ", notesSpan);
+        AddCardioRow(tr, currentExerciseName, cardio[i].time, cardio[i].distance, " ");
     }
     if (tbody !== undefined) {
-        tr.className += " bottomRow";
         tbody.appendChild(tr);
+        table.appendChild(tbody);
     }
-
-    table.appendChild(tbody);
-
-    var workoutlogDiv = document.getElementById("workoutlog");
-    while (workoutlogDiv.firstChild) {
-        workoutlogDiv.removeChild(workoutlogDiv.firstChild);
-    }
-    workoutlogDiv.appendChild(table);
+    workoutLogDiv.appendChild(table);
 }
 
 function CreateGraph(exercise, data) {
@@ -344,32 +421,38 @@ function CreateTable(exercise, data) {
     tableDiv.appendChild(table);
 }
 
+var isDataA = true;
 function AddSetTD(row, weight, reps) {
+    var className = (isDataA = !isDataA) ? "dataA" : "dataB";
+    
     var td = document.createElement("td");
-    td.className = "weightColumn";
+    td.className = className;
     td.appendChild(document.createTextNode(weight));
     row.appendChild(td);
     td = document.createElement("td");
     td.appendChild(document.createTextNode(reps));
-    td.className = "repsColumn";
+    td.className = className;
     row.appendChild(td);
 }
 
-function AddCardioRow(row, name, time, distance, notes, notesSpan) {
-    row.className = "cardioRow";
+function AddCardioRow(row, name, time, distance, notes) {
     var td = document.createElement("td");
+    td.className = "cardioData";
+    td.className += " exerciseColumn";
     td.appendChild(document.createTextNode(name));
     row.appendChild(td);
     td = document.createElement("td");
+    td.className = "cardioData";
     td.style.textAlign = "right";
     td.appendChild(document.createTextNode(time));
     row.appendChild(td);
     td = document.createElement("td");
+    td.className = "cardioData";
     td.style.textAlign = "right";
     td.appendChild(document.createTextNode(distance.toString()));
     row.appendChild(td);
     td = document.createElement("td");
-    td.colSpan = notesSpan.toString();
+    td.className = "cardioData";
     td.appendChild(document.createTextNode(notes));
     row.appendChild(td);
 }

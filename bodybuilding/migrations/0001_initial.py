@@ -23,7 +23,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('time', models.DurationField()),
-                ('distance', models.FloatField()),
+                ('distance', models.DecimalField(max_digits=4, decimal_places=1)),
                 ('exercise', models.ForeignKey(to='bodybuilding.CardioExercise')),
             ],
         ),
@@ -32,7 +32,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('set', models.PositiveSmallIntegerField()),
-                ('weight', models.PositiveSmallIntegerField()),
+                ('weight', models.DecimalField(max_digits=5, decimal_places=1)),
                 ('reps', models.PositiveSmallIntegerField()),
             ],
         ),
@@ -55,6 +55,9 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('date', models.DateField(default=django.utils.timezone.now)),
+                ('weight', models.DecimalField(max_digits=4, decimal_places=1)),
+                ('startTime', models.PositiveSmallIntegerField()),
+                ('endTime', models.PositiveSmallIntegerField()),
             ],
         ),
         migrations.AddField(

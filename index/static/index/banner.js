@@ -1,8 +1,4 @@
 function Banner(banner) {
-    function GetRandomInRange(range) {
-        return Math.random() * (range.max - range.min) + range.min;
-    };
-
     var DrawStar = function(x, y) {
         var INNER_STAR_RADIUS = { min: 0, max: 1 };
         var OUTER_STAR_RADIUS = { min: 1, max: 2 };
@@ -53,7 +49,7 @@ function Banner(banner) {
         var BRANCH_POSITION =       { min: 0.25, max: 0.75 };
         var BRANCH_DEPTH =          { min: 3,    max: 3    };
         var LEAF_RADIUS = 20;
-        var GROW_SPEED = 300;
+        var GROW_SPEED = 2000;//300;
         var BRANCH_COLOR = "#ffffff";
 
         var DrawLine = function(p1, p2) {
@@ -265,7 +261,7 @@ function Banner(banner) {
 */
 
     // draw maples
-    var MAPLE_SPAWN_DELAY =    { min: 500, max: 1750 };
+    var MAPLE_SPAWN_DELAY =    { min: 100, max: 300 };
     var MAPLE_SPAWN_POSITION = { min: 100, max: 900 };
     var mapleTreesLeft = 13;
     var currentSpawnTime = 0;
