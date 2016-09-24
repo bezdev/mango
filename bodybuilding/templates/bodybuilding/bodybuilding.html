@@ -11,10 +11,14 @@
                     $("#exercises").val("{{ exercise }}");
                 {% endif %}
 
+                weightExercises = {{ weightExercises | safe }};
+                cardioExercises = {{ cardioExercises | safe }};
+
                 dates = JSON.parse('{{ workouts | escapejs }}');
                 sets = JSON.parse('{{ sets | escapejs }}');
                 cardio = JSON.parse('{{ cardio | escapejs }}');
-                RenderData();
+
+                FilterManager.Initialize();
             }
         </script>
     {% endblock %}
@@ -23,14 +27,21 @@
         <div id="debug">
             <a href="/life/" rel="/life/">life</a>
         </div>
-        <div id="workoutlognav">
-            <span>
-                <button type="button" id="navLeft"><</button>
-                <select id="datesSelect"></select>
-                <button type="button" id="navRight">></button>
-            </span>
+
+        <div id="workoutDataContent">
+            <div id="workoutDataNav">
+                <div id="weightExercisesNav"></div>
+                <div id="cardioExercisesNav"></div>
+                <div id="comboExercisesNav"></div>
+            </div>
+            <div id="workoutDataGraph"></div>
+            <div id="workoutDataTable"></div>
         </div>
+
+        {% for weightExercise in weightExercises %}
+            <!--<h1>{{ weightExercise }}</h1>-->
+        {% endfor %}
+
         <br />
-        <div id="workoutlog"></div>
         <div id="output"></div>
     {% endblock %}

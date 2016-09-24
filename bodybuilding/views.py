@@ -31,21 +31,22 @@ def bodybuilding(request):
     workoutSessionsList
     jsonWorkoutSessions = json.dumps(workoutSessionsList)
 
-    #weightExercises = WeightExercise.objects.values_list('name', flat=True).distinct()
     sets = Set.objects.all().order_by('training__workout__date', 'training__id', 'set').select_related()
     setsList = []
     for set in sets:
         setsList.append({'date' : str(set.training.workout.date), 'name' : set.training.exercise.name, 'set' : set.set, 'weight' : set.weight, 'reps' : set.reps})
     jsonSets = json.dumps(setsList, default=decimal_default)
 
-    #cardioExercises = CardioExercise.objects.values_list('name', flat=True).distinct()
     cardioTrainings = CardioTraining.objects.all().order_by('workout__date', 'exercise').select_related()
     cardioTrainingsList = []
     for cardioTraining in cardioTrainings:
         cardioTrainingsList.append({'date' : str(cardioTraining.workout.date), 'name' : cardioTraining.exercise.name, 'time' : str(cardioTraining.time), 'distance' : cardioTraining.distance})
     jsonCardioTrainings = json.dumps(cardioTrainingsList, default=decimal_default)
 
-    return render(request, 'bodybuilding/bodybuilding.html', { "workouts" : jsonWorkoutSessions, "sets" : jsonSets, "cardio" : jsonCardioTrainings })
+    weightExercises = list(map(str, WeightExercise.objects.values_list('name', flat=True).distinct()))
+    cardioExercises = list(map(str, CardioExercise.objects.values_list('name', flat=True).distinct()))
+
+    return render(request, 'bodybuilding/bodybuilding.html', { "workouts" : jsonWorkoutSessions, "sets" : jsonSets, "cardio" : jsonCardioTrainings, "weightExercises" : weightExercises, "cardioExercises" : cardioExercises })
 
 def exercise(request, exercise):
     try:

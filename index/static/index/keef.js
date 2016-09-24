@@ -12,3 +12,21 @@ function randomColor() {
 
     return "#" + Math.floor(Math.random()*16777215).toString(16); //"#" + r + g + b;
 }
+
+function RoundToNearestMultipleOf(number, multiple) {
+    var retVal = number / multiple;
+    if (number % multiple !== 0) {
+        if (retVal > 0) {
+            retVal = Math.floor(retVal) + 1;
+        } else {
+            retVal = Math.ceil(retVal) - 1;
+        }
+    }
+
+    return retVal *= multiple;
+}
+
+function getPositionOfElement(element) {
+    for (var xOffset = 0, yOffset = 0; element != null; xOffset += element.offsetLeft, yOffset += element.offsetTop, element = element.offsetParent);
+    return {x: xOffset, y: yOffset};
+}

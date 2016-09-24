@@ -8,32 +8,72 @@
     --table-data-pixel-width: 1px;
 }
 
-#workoutlognav
+#workoutDataContent
 {
-    text-align: center;
 }
 
-#workoutlognav span
+#workoutDataContent div
 {
-    display: inline;
 }
 
-#workoutlognav button
+#workoutDataNav
 {
-    width: 30px;
-    padding: 5px;
-    font-size: 16px;
-    background: var(--table-background-color);
-    color: #ffffff;
+    overflow: hidden;
 }
 
-#workoutlognav select
+#workoutDataNav div
 {
-    width: 115px;
-    padding: 5px;
-    font-size: 16px;
-    background: var(--table-background-color);
-    color: #ffffff;
+    float: left;
+    width: 1000px;
+}
+
+#workoutDataNav div .selected
+{
+    background: red;
+}
+
+#workoutDataNav div .disabled
+{
+    background: grey;
+}
+
+#weightExercisesNav span
+{
+    float: left;
+    border: 1px solid #000000;
+    padding: 10px;
+    margin: 3px;
+}
+
+#weightExercisesNav span:hover
+{
+    background: yellow;
+}
+
+#cardioExercisesNav span
+{
+    float: left;
+    border: 1px solid #000000;
+    padding: 10px;
+    margin: 3px;
+}
+
+#cardioExercisesNav span:hover
+{
+    background: yellow;
+}
+
+#comboExercisesNav span
+{
+    float: left;
+    border: 1px solid #000000;
+    padding: 10px;
+    margin: 3px;
+}
+
+#comboExercisesNav span:hover
+{
+    background: yellow;
 }
 
 table
@@ -83,4 +123,9 @@ svg
 {
     display: block;
     margin: auto;
+}
+
+svg #dataPoints .selected
+{
+    r: 5;
 }
