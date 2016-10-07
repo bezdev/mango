@@ -30,3 +30,7 @@ function getPositionOfElement(element) {
     for (var xOffset = 0, yOffset = 0; element != null; xOffset += element.offsetLeft, yOffset += element.offsetTop, element = element.offsetParent);
     return {x: xOffset, y: yOffset};
 }
+
+Array.prototype.peek = function() {
+    return this[this.length - 1];
+};

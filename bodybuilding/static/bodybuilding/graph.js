@@ -5,7 +5,6 @@ function PlotGraph(parentDiv, width, height, labels, clientOnPointClick) {
 
     var m_padding = { left: 100, top: 100, right: 100, bottom: 150 };
 
-    var m_defaultColors = [ "#FF0000", "#008000", "#0000FF", "#FFA500", "#FFFF00", "#4B0082", "#EE82EE" ]; // ROYGBIV
     var m_axisColor = "#000000";
     var m_labelColor = "#000000";
     var m_tickColor = "#999999";
@@ -270,7 +269,7 @@ function PlotGraph(parentDiv, width, height, labels, clientOnPointClick) {
             }
         }
 
-        m_lines.push({ p: points, c: (color || m_defaultColors[m_lines.length]) });
+        m_lines.push({ p: points, c: color });
     };
 
     this.Render = function() {

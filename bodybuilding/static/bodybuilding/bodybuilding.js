@@ -3,30 +3,27 @@ var sets;
 var cardio;
 var weightExercises;
 var cardioExercises;
-var maxSet;
 var datesList = [];
 var currDateIndex;
 
 var workoutLogDiv;
 
-Array.prototype.peek = function() {
-    return this[this.length - 1];
-};
-
 $(document).ready(function() {
     Initialize();
+
+    FilterManager.Initialize();
 });
 
 class FilterManager {
     static Initialize() {
-        // TODO: change the purpose of these to filters, rather than selections
         this.selectedWeightExercises = [];
         this.selectedCardioExercises = [];
-        this.selectedComboExercises = [];
 
-        this.maxNumExercisesSelected = 3;
+        this.filterColors = [ { color: "red", used: false }, { color: "blue", used: false }, { color: "green", used: false }, { color: "pink", used: false }, { color: "slateblue", used: false }, { color: "khaki", used: false } ];
 
-        var workoutDataNav = document.getElementById("workoutDataNav");
+        this.selectedExercisesCount = 0;
+        this.maxExercisesSelectedCount = 5;
+
         var weightExercisesNav = document.getElementById("weightExercisesNav");
         for (var i = 0; i < weightExercises.length; i++) {
             var exerciseSpan = document.createElement("span");
@@ -43,49 +40,18 @@ class FilterManager {
             cardioExercisesNav.appendChild(exerciseSpan);
         }
 
-        var comboExercisesNav = document.getElementById("comboExercisesNav");
-        var comboExerciseSpan = document.createElement("span");
-        comboExerciseSpan.innerText = "All";
-        comboExerciseSpan.onclick = function() {
-            if (this.className.indexOf("selected") >= 0) {
-                return;
-            }
+        FilterManager.SelectAllExercises();
 
-            FilterManager.ClearExercises();
-
-            // TODO: add logic to clear everything else when all is selected
-            var index = FilterManager.selectedComboExercises.indexOf(this.innerText);
-            if (index === -1) {
-                FilterManager.selectedComboExercises.push(this.innerText);
-            } else {
-                FilterManager.selectedComboExercises.splice(index, 1);
-            }
-
-            $(this).toggleClass("selected");
-
-            RenderData();
-        };
-        comboExercisesNav.appendChild(comboExerciseSpan);
-
-        // default to all
-        comboExerciseSpan.onclick.apply(comboExerciseSpan);
+        RenderData();
     }
 
     static GetFilteredPlotData() {
-        // determine the max amount of sets in the data
-        maxSet = 0;
-        for (var i = 0; i < sets.length; i++) {
-            if (sets[i].set > maxSet) {
-                maxSet = sets[i].set;
-            }
-        }
-
         var lines = [];
         var labels;
 
-        if (FilterManager.selectedComboExercises.length > 0) {
-            // return all exercises
-            var weightTrainingLine = [];
+        if (FilterManager.selectedExercisesCount === (weightExercises.length + cardioExercises.length)) {
+            // Return all exercises.
+            var weightTrainingLinePoints = [];
 
             var currentDate = sets[0].date;
             var currentDateIndex = 0;
@@ -94,7 +60,7 @@ class FilterManager {
                 if (sets[i].date === currentDate) {
                     amountLifted += sets[i].weight * sets[i].reps;
                 } else {
-                    weightTrainingLine.push({ x: currentDateIndex, xText: sets[i].date, y: amountLifted });
+                    weightTrainingLinePoints.push({ x: currentDateIndex, xText: sets[i].date, y: amountLifted });
 
                     currentDate = sets[i].date;
                     currentDateIndex++;
@@ -102,14 +68,27 @@ class FilterManager {
                 }
             }
 
-            lines.push(weightTrainingLine);
+            lines.push({ points: weightTrainingLinePoints, color: FilterManager.filterColors[0].color });
             labels = { title: "All", xAxis: "Date", yAxis: "Weight Lifted (lbs)" };
         } else if (FilterManager.selectedWeightExercises.length > 0 && FilterManager.selectedCardioExercises.length > 0) {
             console.log("both weight + cardio");
         } else if (FilterManager.selectedWeightExercises.length > 0) {
-            // if there's only one exercise selected create lines for every set
+            // If there's only one exercise selected create lines for every set.
+            // Otherwise create a line for each exercise in the selection.
             if (FilterManager.selectedWeightExercises.length === 1) {
-                var exerciseName = FilterManager.selectedWeightExercises[0];
+                var exerciseName = FilterManager.selectedWeightExercises[0].name;
+
+                // Determine the max amount of sets in the data.
+                var maxSet = 0;
+                for (var i = 0; i < sets.length; i++) {
+                    if (sets[i].name != exerciseName) {
+                        continue;
+                    }
+
+                    if (sets[i].set > maxSet) {
+                        maxSet = sets[i].set;
+                    }
+                }
 
                 lines = new Array(maxSet);
 
@@ -120,8 +99,9 @@ class FilterManager {
                         continue;
                     }
 
+                    // Initialize the array of points if not yet defined for this set.
                     if (lines[sets[i].set - 1] === undefined) {
-                        lines[sets[i].set - 1] = [];
+                        lines[sets[i].set - 1] = { points: [], color: FilterManager.filterColors[sets[i].set - 1].color };
                     }
 
                     if (sets[i].date != currentDate) {
@@ -129,20 +109,21 @@ class FilterManager {
                         currentDateIndex++;
                     }
 
-                    lines[sets[i].set - 1].push({ x: currentDateIndex, xText: currentDate, y: sets[i].reps * sets[i].weight });
+                    lines[sets[i].set - 1].points.push({ x: currentDateIndex, xText: currentDate, y: sets[i].reps * sets[i].weight });
                 }
             } else {
                 lines = new Array(FilterManager.selectedWeightExercises.length);
 
                 var datesSeen = [];
                 for (var i = 0; i < sets.length; i++) {
-                    var index = FilterManager.selectedWeightExercises.indexOf(sets[i].name);
+                    var index = FilterManager.GetSelectedExerciseIndex(sets[i].name);
                     if (index === -1) {
                         continue;
                     }
 
+                    // initialize the array of points if not yet defined for this exercise
                     if (lines[index] === undefined) {
-                        lines[index] = [];
+                        lines[index] = { points: [], color: FilterManager.GetSelectedExerciseColor(sets[i].name) };
                     }
 
                     var currentExerciseName = sets[i].name;
@@ -157,53 +138,46 @@ class FilterManager {
                     }
 
                     i--;
-                    lines[index].push({ x: 0, xText: sets[i].date, y: weightLifted });
+                    lines[index].points.push({ x: 0, xText: sets[i].date, y: weightLifted });
                 }
 
                 // fill in .x values
                 for (var i = 0; i < lines.length; i++) {
-                    for (var j = 0; j < lines[i].length; j++) {
-                        lines[i][j].x = datesSeen.indexOf(lines[i][j].xText);
+                    for (var j = 0; j < lines[i].points.length; j++) {
+                        lines[i].points[j].x = datesSeen.indexOf(lines[i].points[j].xText);
                     }
                 }
             }
 
-            labels = { title: "All", xAxis: "Date", yAxis: "Weight Lifted (lbs)" };
+            labels = { title: "Weightlifting", xAxis: "Date", yAxis: "Weight Lifted (lbs)" };
         } else if (FilterManager.selectedCardioExercises.length > 0) {
             console.log("cardio");
-        } else {
-            console.log("nothing");
         }
 
         return { lines: lines, labels: labels };
     }
 
     static ExerciseButtonOnClick(that, type) {
-        if (type === "bodybuilding") {
-            var selectedExercises = FilterManager.selectedWeightExercises;
-            var exerciseNav = "weightExercisesNav";
-        } else if (type === "cardio") {
-            var selectedExercises = FilterManager.selectedCardioExercises;
-            var exerciseNav = "cardioExercisesNav";
-        }
-
-        if (FilterManager.selectedComboExercises.length > 0) {
-            FilterManager.selectedComboExercises = [];
-
-            var buttons = document.getElementById("comboExercisesNav").children;
-            for (var i = 0; i < buttons.length; i++) {
-                buttons[i].className = "";
-            }
+        // If all filters are selected we need to clear them first
+        if (FilterManager.selectedExercisesCount === (weightExercises.length + cardioExercises.length)) {
+            FilterManager.ClearFilters();
         }
 
         // If we can no longer select any more exercises, we must make sure that the exercise clicked was already selected.
         // If so then we can mark the rest to be enabled.
-        if (selectedExercises.length === FilterManager.maxNumExercisesSelected) {
-            if (that.className.indexOf("selected") >= 0) {
-                var buttons = document.getElementById(exerciseNav).children;
-                for (var j = 0; j < buttons.length; j++) {
-                    if (buttons[j].className.indexOf("disabled") >= 0) {
-                        $(buttons[j]).toggleClass("disabled");
+        if (FilterManager.selectedExercisesCount === FilterManager.maxExercisesSelectedCount) {
+            if ($(that).hasClass("selected")) {
+                var buttons = document.getElementById("weightExercisesNav").children;
+                for (var j = 0; j < buttons.length; j++) {  
+                    if ($(buttons[j]).hasClass("disabled")) {
+                        $(buttons[j]).removeClass("disabled");
+                    }
+                }
+
+                buttons = document.getElementById("cardioExercisesNav").children;
+                for (var j = 0; j < buttons.length; j++) {  
+                    if ($(buttons[j]).hasClass("disabled")) {
+                        $(buttons[j]).removeClass("disabled");
                     }
                 }
             } else {
@@ -211,44 +185,154 @@ class FilterManager {
             }
         }
 
-        var index = selectedExercises.indexOf(that.innerText);
-        if (index === -1) {
-            selectedExercises.push(that.innerText);
-        } else {
-            selectedExercises.splice(index, 1);
+        var selectedExercises;
+        if (type === "bodybuilding") {
+            selectedExercises = FilterManager.selectedWeightExercises;
+        } else if (type === "cardio") {
+            selectedExercises = FilterManager.selectedCardioExercises;
         }
 
-        $(that).toggleClass("selected");
+        // If the exercise can't be found, add it, otherwise remove it.
+        var index = FilterManager.GetSelectedExerciseIndex(that.innerText);
+        if (index === -1) {
+            // Find a color that isn't being used.
+            var color;
+            var colorIndex;
+            for (var i = 0; i < FilterManager.filterColors.length; i++) {
+                if (!FilterManager.filterColors[i].used) {
+                    color = FilterManager.filterColors[i].color;
+                    FilterManager.filterColors[i].used = true;
+                    colorIndex = i;
+                    break;
+                }
+            }
 
-        // disable the other buttons if max num has been reached
-        if (selectedExercises.length === FilterManager.maxNumExercisesSelected) {
+            selectedExercises.push({ name: that.innerText, colorIndex: colorIndex});
+            FilterManager.selectedExercisesCount++;
+            $(that).addClass("selected");
 
-            buttons = document.getElementById(exerciseNav).children;
-            for (var j = 0; j < buttons.length; j++) {
-                if (buttons[j].className.indexOf("selected") >= 0) {
-                    continue;
+            $(that).css("background-color", color);
+
+            // Disable the other buttons if max num has been reached.
+            if (FilterManager.selectedExercisesCount === FilterManager.maxExercisesSelectedCount) {
+
+                var buttons = document.getElementById("weightExercisesNav").children;
+                for (var j = 0; j < buttons.length; j++) {
+                    if ($(buttons[j]).hasClass("selected")) {
+                        continue;
+                    }
+
+                    $(buttons[j]).toggleClass("disabled");
                 }
 
-                $(buttons[j]).toggleClass("disabled");
+                buttons = document.getElementById("cardioExercisesNav").children;
+                for (var j = 0; j < buttons.length; j++) {
+                    if ($(buttons[j]).hasClass("selected")) {
+                        continue;
+                    }
+
+                    $(buttons[j]).toggleClass("disabled");
+                }
+            }
+        } else {
+            var colorIndex = selectedExercises[index].colorIndex;
+            selectedExercises.splice(index, 1);
+            FilterManager.selectedExercisesCount--;
+
+            // If the last filter was removed, then select all filters.
+            if (FilterManager.selectedExercisesCount === 0) {
+                FilterManager.SelectAllExercises();
+            } else {
+                $(that).removeClass("selected");
+                $(that).css("background-color", "");
+                FilterManager.filterColors[colorIndex].used = false;
             }
         }
 
         RenderData();
     }
 
-    static ClearExercises() {
+    static GetSelectedExerciseIndex(name) {
+        for (var i = 0; i < FilterManager.selectedWeightExercises.length; i++) {
+            if (FilterManager.selectedWeightExercises[i].name == name) {
+                return i;
+            }
+        }
+
+        for (var i = 0; i < FilterManager.selectedCardioExercises.length; i++) {
+            if (FilterManager.selectedCardioExercises[i].name == name) {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
+    static GetSelectedExerciseColor(name) {
+        for (var i = 0; i < FilterManager.selectedWeightExercises.length; i++) {
+            if (FilterManager.selectedWeightExercises[i].name == name) {
+                return FilterManager.filterColors[FilterManager.selectedWeightExercises[i].colorIndex].color;
+            }
+        }
+
+        for (var i = 0; i < FilterManager.selectedCardioExercises.length; i++) {
+            if (FilterManager.selectedCardioExercises[i].name == name) {
+                return FilterManager.filterColors[FilterManager.selectedCardioExercises[i].colorIndex].color;
+            }
+        }
+    }
+
+    static SelectAllExercises() {
+        FilterManager.ClearFilters();
+
+        var buttons = document.getElementById("weightExercisesNav").children;
+        for (var i = 0; i < buttons.length; i++) {
+            $(buttons[i]).addClass("selected");
+            $(buttons[i]).css("background-color", FilterManager.filterColors[0].color);
+            FilterManager.filterColors[0].used = true;
+        }
+
+        buttons = document.getElementById("cardioExercisesNav").children;
+        for (var i = 0; i < buttons.length; i++) {
+            $(buttons[i]).addClass("selected");
+            $(buttons[i]).css("background-color", FilterManager.filterColors[1].color);
+            FilterManager.filterColors[1].used = true;
+        }
+
+        for (var i = 0; i < weightExercises.length; i++) {
+            FilterManager.selectedWeightExercises.push({ name: weightExercises[i], color: FilterManager.filterColors[0].color });
+            FilterManager.selectedExercisesCount++;
+        }
+
+        for (var i = 0; i < cardioExercises.length; i++) {
+            FilterManager.selectedCardioExercises.push({ name: cardioExercises[i], color: FilterManager.filterColors[1].color });
+            FilterManager.selectedExercisesCount++;
+        }
+    }
+
+    static ClearFilters() {
         var buttons = document.getElementById("weightExercisesNav").children;
         for (var i = 0; i < buttons.length; i++) {
             buttons[i].className = "";
+            buttons[i].colorIndex = -1;
+            $(buttons[i]).css("background-color", "");
         }
 
         buttons = document.getElementById("cardioExercisesNav").children;
         for (var i = 0; i < buttons.length; i++) {
             buttons[i].className = "";
+            buttons[i].colorIndex = -1;
+            $(buttons[i]).css("background-color", "");
         }
 
-         FilterManager.selectedWeightExercises = [];
-         FilterManager.selectedCardioExercises = [];
+        FilterManager.selectedWeightExercises = [];
+        FilterManager.selectedCardioExercises = [];
+
+        FilterManager.selectedExercisesCount = 0;
+
+        for (var i = 0; i < FilterManager.filterColors.length; i++) {
+            FilterManager.filterColors[i].used = false;
+        }
     }
 }
 
@@ -260,7 +344,7 @@ function RenderData() {
     };
     var plotGraph = new PlotGraph(document.getElementById("workoutDataGraph"), 1000, 600, { title: data.labels.title, xAxis: data.labels.xAxis, yAxis: data.labels.yAxis }, pointOnClick);
     for (var i = 0; i < data.lines.length; i++) {
-        plotGraph.AddLine(data.lines[i]);
+        plotGraph.AddLine(data.lines[i].points, data.lines[i].color);
         plotGraph.Render();
     }
 /*
@@ -421,7 +505,7 @@ function CreateWeightTrainingTable(date) {
     var td;
 
     // Determine the max amount of sets in the data for this data
-    maxSet = 0;
+    var maxSet = 0;
     for (var i = 0; i < sets.length; i++) {
         if (sets[i].date !== date) {
             continue;
