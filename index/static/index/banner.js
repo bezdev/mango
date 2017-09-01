@@ -261,7 +261,7 @@ function Banner(banner) {
 */
 
     // draw maples
-    var MAPLE_SPAWN_DELAY =    { min: 100, max: 300 };
+    var MAPLE_SPAWN_DELAY =    { min: 0, max: 0 };
     var MAPLE_SPAWN_POSITION = { min: 100, max: 900 };
     var mapleTreesLeft = 13;
     var currentSpawnTime = 0;

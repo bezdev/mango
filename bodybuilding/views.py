@@ -40,7 +40,7 @@ def bodybuilding(request):
     cardioTrainings = CardioTraining.objects.all().order_by('workout__date', 'exercise').select_related()
     cardioTrainingsList = []
     for cardioTraining in cardioTrainings:
-        cardioTrainingsList.append({'date' : str(cardioTraining.workout.date), 'name' : cardioTraining.exercise.name, 'time' : str(cardioTraining.time), 'distance' : cardioTraining.distance})
+        cardioTrainingsList.append({'date' : str(cardioTraining.workout.date), 'name' : cardioTraining.exercise.name, 'time' : str(cardioTraining.time), 'distance' : cardioTraining.distance, 'units' : cardioTraining.units})
     jsonCardioTrainings = json.dumps(cardioTrainingsList, default=decimal_default)
 
     weightExercises = list(map(str, WeightExercise.objects.values_list('name', flat=True).distinct()))

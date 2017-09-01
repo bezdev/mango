@@ -8,18 +8,17 @@ var currDateIndex;
 
 var workoutLogDiv;
 
-$(document).ready(function() {
-    Initialize();
-
-    FilterManager.Initialize();
-});
-
 class FilterManager {
     static Initialize() {
         this.selectedWeightExercises = [];
         this.selectedCardioExercises = [];
 
-        this.filterColors = [ { color: "red", used: false }, { color: "blue", used: false }, { color: "green", used: false }, { color: "pink", used: false }, { color: "slateblue", used: false }, { color: "khaki", used: false } ];
+        this.filterColors = [ { color: "red", used: false },
+                              { color: "blue", used: false },
+                              { color: "green", used: false },
+                              { color: "pink", used: false },
+                              { color: "slateblue", used: false },
+                              { color: "khaki", used: false } ];
 
         this.selectedExercisesCount = 0;
         this.maxExercisesSelectedCount = 5;
@@ -49,29 +48,124 @@ class FilterManager {
         var lines = [];
         var labels;
 
+        // All the exercises are selected.
         if (FilterManager.selectedExercisesCount === (weightExercises.length + cardioExercises.length)) {
-            // Return all exercises.
             var weightTrainingLinePoints = [];
+            var cardioTrainingLinePoints = [];
 
+            var datesSeen = [];
+
+            // Compute weight training line.
             var currentDate = sets[0].date;
-            var currentDateIndex = 0;
             var amountLifted = 0;
             for (var i = 0; i < sets.length; i++) {
+                if (!datesSeen.includes(sets[i].date)) {
+                    datesSeen.push(sets[i].date);
+                }
+
+                // Add on total amount lifted for the current day.
                 if (sets[i].date === currentDate) {
-                    amountLifted += sets[i].weight * sets[i].reps;
+                    amountLifted += (sets[i].weight * sets[i].reps);
                 } else {
-                    weightTrainingLinePoints.push({ x: currentDateIndex, xText: sets[i].date, y: amountLifted });
+                    // Push previous set date and amount lifted
+                    weightTrainingLinePoints.push({ x: 0, xText: sets[i - 1].date, y: amountLifted });
 
                     currentDate = sets[i].date;
-                    currentDateIndex++;
+                    datesSeen.push(currentDate);
                     amountLifted = (sets[i].weight * sets[i].reps);
                 }
             }
+            weightTrainingLinePoints.push({ x: 0, xText: sets[sets.length - 1].date, y: amountLifted });
 
-            lines.push({ points: weightTrainingLinePoints, color: FilterManager.filterColors[0].color });
-            labels = { title: "All", xAxis: "Date", yAxis: "Weight Lifted (lbs)" };
+            // Compute cardio training line.
+            currentDate = cardio[0].date;
+            for (var i = 0; i < cardio.length; i++) {
+                if (!datesSeen.includes(sets[i].date)) {
+                    datesSeen.push(currentDate);
+                }
+
+                // Only one cardio per day
+                // Convert units to miles
+                var distanceInMiles = ConvertUnits(cardio[i].distance, cardio[i].units, "mi.");
+                cardioTrainingLinePoints.push({ x: 0, xText: cardio[i].date, y: distanceInMiles });
+            }
+
+            datesSeen = jQuery.unique(datesSeen.sort());
+
+            // Fill in .x values
+            for (var i = 0; i < weightTrainingLinePoints.length; i++) {
+                weightTrainingLinePoints[i].x = datesSeen.indexOf(weightTrainingLinePoints[i].xText);
+            }
+
+            for (var i = 0; i < cardioTrainingLinePoints.length; i++) {
+                cardioTrainingLinePoints[i].x = datesSeen.indexOf(cardioTrainingLinePoints[i].xText);
+            }
+
+            lines.push({ points: weightTrainingLinePoints, color: FilterManager.filterColors[0].color, isY2: false });
+            lines.push({ points: cardioTrainingLinePoints, color: FilterManager.filterColors[1].color, isY2: true });
+            labels = { title: "All", xAxis: "Date", yAxis: "Weight Lifted (lbs)", yAxis2: "Distance (mi)" };
+        // Both weight and cardio are selected.
         } else if (FilterManager.selectedWeightExercises.length > 0 && FilterManager.selectedCardioExercises.length > 0) {
-            console.log("both weight + cardio");
+            var lines = new Array(FilterManager.selectedWeightExercises.length + FilterManager.selectedCardioExercises.length);
+
+            var datesSeen = [];
+            for (var i = 0; i < sets.length; i++) {
+                var index = FilterManager.GetSelectedExerciseIndex(sets[i].name);
+                if (index === -1) {
+                    continue;
+                }
+
+                // Initialize the array of points if not yet defined for this exercise.
+                if (lines[index] === undefined) {
+                    lines[index] = { points: [], color: FilterManager.GetSelectedExerciseColor(sets[i].name), isY2: false };
+                }
+
+                var currentExerciseName = sets[i].name;
+                var currentDate = sets[i].date;
+                if (!datesSeen.includes(currentDate)) {
+                    datesSeen.push(currentDate);
+                }
+                var weightLifted = 0;
+                while (i < sets.length && sets[i].name == currentExerciseName && sets[i].date == currentDate) {
+                    weightLifted += sets[i].weight * sets[i].reps;
+                    i++;
+                }
+
+                i--;
+                lines[index].points.push({ x: 0, xText: sets[i].date, y: weightLifted });
+            }
+
+            for (var i = 0; i < cardio.length; i++) {
+                var index = FilterManager.GetSelectedExerciseIndex(cardio[i].name);
+                if (index === -1) {
+                    continue;
+                }
+
+                // Initialize the array of points if not yet defined for this exercise
+                if (lines[index + FilterManager.selectedWeightExercises.length] === undefined) {
+                    lines[index + FilterManager.selectedWeightExercises.length] = { points: [], color: FilterManager.GetSelectedExerciseColor(cardio[i].name), isY2: true };
+                }
+
+                var currentDate = cardio[i].date;
+                if (!datesSeen.includes(currentDate)) {
+                    datesSeen.push(currentDate);
+                }
+
+                // Convert units to miles
+                var distanceInMiles = ConvertUnits(cardio[i].distance, cardio[i].units, "mi.");
+                lines[index + FilterManager.selectedWeightExercises.length].points.push({ x: 0, xText: cardio[i].date, y: distanceInMiles });
+            }
+
+            datesSeen = jQuery.unique(datesSeen.sort());
+
+            // Fill in .x values
+            for (var i = 0; i < lines.length; i++) {
+                for (var j = 0; j < lines[i].points.length; j++) {
+                    lines[i].points[j].x = datesSeen.indexOf(lines[i].points[j].xText);
+                }
+            }
+
+            labels = { title: "Both", xAxis: "Date", yAxis: "Weight Lifted (lbs)", yAxis2: "Distance (mi)" };
         } else if (FilterManager.selectedWeightExercises.length > 0) {
             // If there's only one exercise selected create lines for every set.
             // Otherwise create a line for each exercise in the selection.
@@ -101,7 +195,7 @@ class FilterManager {
 
                     // Initialize the array of points if not yet defined for this set.
                     if (lines[sets[i].set - 1] === undefined) {
-                        lines[sets[i].set - 1] = { points: [], color: FilterManager.filterColors[sets[i].set - 1].color };
+                        lines[sets[i].set - 1] = { points: [], color: FilterManager.filterColors[sets[i].set - 1].color, isY2: false };
                     }
 
                     if (sets[i].date != currentDate) {
@@ -121,14 +215,14 @@ class FilterManager {
                         continue;
                     }
 
-                    // initialize the array of points if not yet defined for this exercise
+                    // Initialize the array of points if not yet defined for this exercise
                     if (lines[index] === undefined) {
-                        lines[index] = { points: [], color: FilterManager.GetSelectedExerciseColor(sets[i].name) };
+                        lines[index] = { points: [], color: FilterManager.GetSelectedExerciseColor(sets[i].name), isY2: false };
                     }
 
                     var currentExerciseName = sets[i].name;
                     var currentDate = sets[i].date;
-                    if (datesSeen.indexOf(currentDate) == -1) {
+                    if (!datesSeen.includes(currentDate)) {
                         datesSeen.push(currentDate);
                     }
                     var weightLifted = 0;
@@ -141,7 +235,7 @@ class FilterManager {
                     lines[index].points.push({ x: 0, xText: sets[i].date, y: weightLifted });
                 }
 
-                // fill in .x values
+                // Fill in .x values
                 for (var i = 0; i < lines.length; i++) {
                     for (var j = 0; j < lines[i].points.length; j++) {
                         lines[i].points[j].x = datesSeen.indexOf(lines[i].points[j].xText);
@@ -151,7 +245,38 @@ class FilterManager {
 
             labels = { title: "Weightlifting", xAxis: "Date", yAxis: "Weight Lifted (lbs)" };
         } else if (FilterManager.selectedCardioExercises.length > 0) {
-            console.log("cardio");
+            lines = new Array(FilterManager.selectedCardioExercises.length);
+
+            var datesSeen = [];
+            for (var i = 0; i < cardio.length; i++) {
+                var index = FilterManager.GetSelectedExerciseIndex(cardio[i].name);
+                if (index === -1) {
+                    continue;
+                }
+
+                // Initialize the array of points if not yet defined for this exercise
+                if (lines[index] === undefined) {
+                    lines[index] = { points: [], color: FilterManager.GetSelectedExerciseColor(cardio[i].name), isY2: false };
+                }
+
+                var currentDate = cardio[i].date;
+                if (!datesSeen.includes(currentDate)) {
+                    datesSeen.push(currentDate);
+                }
+
+                // Convert units to miles
+                var distanceInMiles = ConvertUnits(cardio[i].distance, cardio[i].units, "mi.");
+                lines[index].points.push({ x: 0, xText: cardio[i].date, y: distanceInMiles });
+            }
+
+            // Fill in .x values
+            for (var i = 0; i < lines.length; i++) {
+                for (var j = 0; j < lines[i].points.length; j++) {
+                    lines[i].points[j].x = datesSeen.indexOf(lines[i].points[j].xText);
+                }
+            }
+
+            labels = { title: "Cardio", xAxis: "Date", yAxis: "Distance (mi)" };
         }
 
         return { lines: lines, labels: labels };
@@ -342,112 +467,12 @@ function RenderData() {
     var pointOnClick = function (x, y, date) {
             CreateDayTable(date);
     };
-    var plotGraph = new PlotGraph(document.getElementById("workoutDataGraph"), 1000, 600, { title: data.labels.title, xAxis: data.labels.xAxis, yAxis: data.labels.yAxis }, pointOnClick);
+    var plotGraph = new PlotGraph(document.getElementById("workoutDataGraph"), 1000, 600, { title: data.labels.title, xAxis: data.labels.xAxis, yAxis: data.labels.yAxis, yAxis2: data.labels.yAxis2 }, pointOnClick);
     for (var i = 0; i < data.lines.length; i++) {
-        plotGraph.AddLine(data.lines[i].points, data.lines[i].color);
-        plotGraph.Render();
+        plotGraph.AddLine(data.lines[i].points, data.lines[i].color, data.lines[i].isY2);
     }
-/*
-    var lines = [];
 
-    if (FilterManager.selectedComboExercises.length > 0) {
-        console.log("render all");
-
-        var weightTrainingLine = [];
-
-        var currentDate = sets[0].date;
-        var currentDateIndex = 0;
-        var amountLifted = 0;
-        for (var i = 0; i < sets.length; i++) {
-            if (sets[i].date === currentDate) {
-                amountLifted += sets[i].weight * sets[i].reps;
-            } else {
-                weightTrainingLine.push({ x: currentDateIndex, xText: sets[i].date, y: amountLifted });
-
-                currentDate = sets[i].date;
-                currentDateIndex++;
-                amountLifted = (sets[i].weight * sets[i].reps);
-            }
-        }
-
-        var pointOnClick = function (x, y, date) {
-            CreateDayTable(date);
-        };
-        var plotGraph = new PlotGraph(document.getElementById("workoutDataGraph"), 1000, 600, { title: "All", xAxis: "Date", yAxis: "Weight Lifted (lbs)" }, pointOnClick);
-        plotGraph.AddLine(weightTrainingLine);
-        plotGraph.Render();
-    } else if (FilterManager.selectedWeightExercises.length > 0 && FilterManager.selectedCardioExercises.length > 0) {
-        console.log("both weight + cardio");
-    } else if (FilterManager.selectedWeightExercises.length > 0) {
-        // if there's only one exercise selected create lines for every set
-        if (FilterManager.selectedWeightExercises.length === 1) {
-            var exerciseName = FilterManager.selectedWeightExercises[0];
-
-            lines = new Array(maxSet);
-
-            var currentDate = sets[0].date;
-            var currentDateIndex = 0;
-            for (var i = 0; i < sets.length; i++) {
-                if (sets[i].name != exerciseName) {
-                    continue;
-                }
-
-                if (lines[sets[i].set - 1] === undefined) {
-                    lines[sets[i].set - 1] = [];
-                }
-
-                if (sets[i].date != currentDate) {
-                    currentDate = sets[i].date;
-                    currentDateIndex++;
-                }
-
-                lines[sets[i].set - 1].push({ x: currentDateIndex, xText: currentDate, y: sets[i].reps * sets[i].weight });
-            }
-        } else {
-            lines = new Array(FilterManager.selectedWeightExercises.length);
-
-            var currentDate = sets[0].date;
-            var currentExerciseName = sets[0].name;
-            var currentDateIndex = 0;
-            var weightLifted = 0;
-            for (var i = 0; i < sets.length; i++) {
-                var index = FilterManager.selectedWeightExercises.indexOf(sets[i].name);
-                if (index === -1) {
-                    continue;
-                }
-
-                if (lines[index] === undefined) {
-                    lines[index] = [];
-                }
-
-                if (sets[i].date !== currentDate) {
-                    currentDate = sets[i].date;
-                    currentDateIndex++;
-                }
-
-                if (sets[i].name === currentExerciseName) {
-                    weightLifted += sets[i].weight * sets[i].reps;
-                } else {
-                    lines[index].push({ x: currentDateIndex, xText: currentDate, y: weightLifted });
-                    weightLifted = 0;
-                    currentExerciseName = sets[i].name;
-                }
-            }
-        }
-
-        var plotGraph = new PlotGraph(document.getElementById("workoutDataGraph"), 1000, 600, { title: "All", xAxis: "Date", yAxis: "Weight Lifted (lbs)" }, pointOnClick);
-        for (var i = 0; i < lines.length; i++) {
-            plotGraph.AddLine(lines[i]);
-            plotGraph.Render();
-        }
-
-        console.log("weight");
-    } else if (FilterManager.selectedCardioExercises.length > 0) {
-        console.log("cardio");
-    } else {
-        console.log("nothing");
-    }
-*/
+    plotGraph.Render();
 }
 
 //   +----------+---------------+---------------+     +---------------+
@@ -658,139 +683,6 @@ function CreateCardioTable(date) {
     }
     workoutLogDiv.appendChild(table);
 }
-/*
-function CreateGraph(exercise, data) {
-    if (data.length == 0)
-    {
-        return;
-    }
-
-    // determine the max amount of sets in the data
-    var maxSet = 0;
-    for (var i = 0; i < data.length; i++) {
-        var set = data[i]["fields"]["set"];
-        if (set > maxSet) {
-            maxSet = set;
-        }
-    }
-
-    var lines = new Array(maxSet);
-
-    // Schema: jsonData[i]["fields|model|pk"]
-    //         jsonData[i]["fields"]["date|reps|set|weight"]
-    var currentDate = data[0]["fields"]["date"];
-    var currentDateIndex = 0;
-    for (var i = 0; i < data.length; i++) {
-        // create the set line if we have to
-        if (lines[data[i]["fields"]["set"] - 1] === undefined) {
-            lines[data[i]["fields"]["set"] - 1] = [];
-        }
-
-        if (currentDate != data[i]["fields"]["date"]) {
-            currentDateIndex++;
-            currentDate = data[i]["fields"]["date"];
-        }
-
-        lines[data[i]["fields"]["set"] - 1].push({ x: currentDateIndex, xText: data[i]["fields"]["date"], y: data[i]["fields"]["reps"] * data[i]["fields"]["weight"] });
-    }
-
-    var plotGraph = new PlotGraph(1000, 500, { title: exercise, xaxis: "Date", yaxis: "Weight x Reps" });
-
-    for (var i = 0; i < lines.length; i++) {
-        plotGraph.AddLine(lines[i]);
-    }
-
-    var graphDiv = document.getElementById("graph");
-    while (graphDiv.firstChild) {
-        graphDiv.removeChild(graphDiv.firstChild);
-    }
-    graphDiv.appendChild(plotGraph.CreateSVG());
-}
-
-
-function CreateTable(exercise, data) {
-    document.getElementById("graph").innerHtml = "";
-
-    if (data.length == 0)
-    {
-        return;
-    }
-
-    // determine the max amount of sets in the data
-    var maxSet = 0;
-    for (var i = 0; i < data.length; i++) {
-        var set = data[i]["fields"]["set"];
-        if (set > maxSet) {
-            maxSet = set;
-        }
-    }
-
-    // create head row 1
-    var table = document.createElement("table");
-    var thead = document.createElement("thead");
-    var tr = document.createElement("tr");
-    var td = document.createElement("td");
-    td.appendChild(document.createTextNode(exercise));
-    tr.appendChild(td);
-    for (var i = 1; i <= maxSet; i++) {
-        td = document.createElement("td");
-        td.colSpan = "2";
-        td.style.textAlign = "center";
-        td.appendChild(document.createTextNode("Set " + i));
-        tr.appendChild(td);
-    }
-    thead.appendChild(tr);
-
-    // create head row 2
-    tr = document.createElement("tr");
-    td = document.createElement("td");
-    td.appendChild(document.createTextNode("Date"));
-    tr.appendChild(td);
-    for (var i = 1; i <= maxSet; i++) {
-        AddSetTD(tr, "Weight", "Reps");
-    }
-    thead.appendChild(tr);
-    table.appendChild(thead);
-
-    var tbody = document.createElement("tbody");
-    var currentDate = data[0]["fields"]["date"];
-    var currentSet = 1;
-    tr = document.createElement("tr");
-    td = document.createElement("td");
-    td.appendChild(document.createTextNode(currentDate));
-    tr.appendChild(td);
-    for (var i = 0; i <= data.length; i++) {
-        if (i < data.length && data[i]["fields"]["date"] == currentDate) {
-            AddSetTD(tr, data[i]["fields"]["weight"], data[i]["fields"]["reps"]);
-            currentSet++;
-        } else {
-            // finish off the row if needed and add it
-            for (; currentSet <= maxSet; currentSet++) {
-                AddSetTD(tr, "", "");
-            }
-            tbody.appendChild(tr);
-
-            // get ready for next row if needed
-            if (i < data.length) {
-                var currentDate = data[i]["fields"]["date"];
-                tr = document.createElement("tr");
-                td = document.createElement("td");
-                td.appendChild(document.createTextNode(currentDate));
-                tr.appendChild(td);
-                AddSetTD(tr, data[i]["fields"]["weight"], data[i]["fields"]["reps"]);
-                var currentSet = 2;
-            }
-        }
-    }
-    table.appendChild(tbody);
-
-    var tableDiv = document.getElementById("table");
-    while (tableDiv.firstChild) {
-        tableDiv.removeChild(tableDiv.firstChild);
-    }
-    tableDiv.appendChild(table);
-}
-*/
 var isDataA = true;
 function AddSetTD(row, weight, reps) {
     var className = (isDataA = !isDataA) ? "dataA" : "dataB";
@@ -826,3 +718,19 @@ function AddCardioRow(row, name, time, distance, notes) {
     td.appendChild(document.createTextNode(notes));
     row.appendChild(td);
 }
+
+function ConvertUnits(value, unitFrom, unitTo) {
+    if (unitTo === "mi.") {
+        if (unitFrom === "yards") {
+            return (value * 0.00056818);
+        }
+    }
+
+    return value;
+}
+
+$(document).ready(function() {
+    Initialize();
+
+    FilterManager.Initialize();
+});

@@ -27,6 +27,12 @@
     width: 1000px;
 }
 
+#workoutDataNav span
+{
+    user-select: none;
+    cursor: default;
+}
+
 #workoutDataNav div .selected
 {
     background: red;

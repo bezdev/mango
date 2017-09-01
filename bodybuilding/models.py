@@ -3,15 +3,21 @@ from django.utils import timezone
 
 class WorkoutSession(models.Model):
     date = models.DateField(default=timezone.now)
-    weight = models.DecimalField(max_digits = 4, decimal_places = 1)
-    startTime = models.PositiveSmallIntegerField()
-    endTime = models.PositiveSmallIntegerField()
+    weight = models.DecimalField(max_digits = 4, decimal_places = 1, blank = True, null = True)
+    startTime = models.PositiveSmallIntegerField(blank = True, null = True)
+    endTime = models.PositiveSmallIntegerField(blank = True, null = True)
+
+    class Meta:
+        ordering = ["-id"]
 
     def __str__(self):
         return unicode(self.date)
 
 class WeightExercise(models.Model):
     name = models.CharField(max_length = 50)
+
+    class Meta:
+        ordering = ["name"]
 
     def __str__(self):
         return unicode(self.name)
@@ -41,8 +47,9 @@ class Set(models.Model):
 class CardioTraining(models.Model):
     workout = models.ForeignKey(WorkoutSession)
     exercise = models.ForeignKey(CardioExercise)
-    time = models.DurationField()
-    distance = models.DecimalField(max_digits = 4, decimal_places = 1)
+    time = models.DurationField(blank = True, null = True)
+    distance = models.DecimalField(max_digits = 7, decimal_places = 2, blank = True, null = True)
+    units = models.CharField(max_length = 10)
 
     def __str__(self):
-        return unicode(self.exercise) + " Time: " + unicode(self.time) + " Distance: " + unicode(self.distance) + "mi"
+        return unicode(self.exercise) + " Time: " + unicode(self.time) + " Distance: " + unicode(self.distance) + " " + self.units
