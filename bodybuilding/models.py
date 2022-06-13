@@ -29,14 +29,14 @@ class CardioExercise(models.Model):
         return unicode(self.name)
 
 class WeightTraining(models.Model):
-    workout = models.ForeignKey(WorkoutSession)
-    exercise = models.ForeignKey(WeightExercise)
+    workout = models.ForeignKey(WorkoutSession, on_delete=models.PROTECT)
+    exercise = models.ForeignKey(WeightExercise, on_delete=models.PROTECT)
 
     def __str__(self):
         return unicode(self.workout) + " " + unicode(self.exercise)
 
 class Set(models.Model):
-    training = models.ForeignKey(WeightTraining)
+    training = models.ForeignKey(WeightTraining, on_delete=models.PROTECT)
     set = models.PositiveSmallIntegerField()
     weight = models.DecimalField(max_digits = 5, decimal_places = 1)
     reps = models.PositiveSmallIntegerField()
@@ -45,8 +45,8 @@ class Set(models.Model):
         return unicode(self.training) + " Set: " + unicode(self.set) + " " + unicode(self.weight) + "x" + unicode(self.reps)
 
 class CardioTraining(models.Model):
-    workout = models.ForeignKey(WorkoutSession)
-    exercise = models.ForeignKey(CardioExercise)
+    workout = models.ForeignKey(WorkoutSession, on_delete=models.PROTECT)
+    exercise = models.ForeignKey(CardioExercise, on_delete=models.PROTECT)
     time = models.DurationField(blank = True, null = True)
     distance = models.DecimalField(max_digits = 7, decimal_places = 2, blank = True, null = True)
     units = models.CharField(max_length = 10)

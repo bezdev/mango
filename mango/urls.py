@@ -17,8 +17,8 @@ from django.conf.urls import include, url
 from django.contrib import admin
 
 urlpatterns = [
-    url(r'^$', include('index.urls', namespace='index')),
-    url(r'^life/', include('life.urls', namespace='life')),
-    url(r'^bodybuilding/', include('bodybuilding.urls', namespace='bodybuilding')),
-    url(r'^admin/', include(admin.site.urls)),
+    url(r'^$', include(('index.urls', 'index'), namespace='index')),
+    url(r'^life/', include(('life.urls', 'life'), namespace='life')),
+    url(r'^bodybuilding/', include(('bodybuilding.urls', 'bodybuilding'), namespace='bodybuilding')),
+#   url(r'^admin/', include((admin.site.urls, 'admin'), namespace='admin')),
 ]
