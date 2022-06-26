@@ -1,0 +1,137 @@
+:root
+{
+    --table-background-color: #08A2DD;
+    --table-border-color: #f9f9f9;
+    --table-header-background-color: #08A2DD;
+    --table-dataA-color: #EB523F;
+    --table-dataB-color: #155157;
+    --table-data-pixel-width: 1px;
+}
+
+#workoutDataContent
+{
+}
+
+#workoutDataContent div
+{
+}
+
+#workoutDataNav
+{
+    overflow: hidden;
+}
+
+#workoutDataNav div
+{
+    float: left;
+    width: 1000px;
+}
+
+#workoutDataNav span
+{
+    user-select: none;
+    cursor: default;
+}
+
+#workoutDataNav div .selected
+{
+    background: red;
+}
+
+#workoutDataNav div .disabled
+{
+    background: grey;
+}
+
+#weightExercisesNav span
+{
+    float: left;
+    border: 1px solid #000000;
+    padding: 10px;
+    margin: 3px;
+}
+
+#weightExercisesNav span:hover
+{
+    background: yellow;
+}
+
+#cardioExercisesNav span
+{
+    float: left;
+    border: 1px solid #000000;
+    padding: 10px;
+    margin: 3px;
+}
+
+#cardioExercisesNav span:hover
+{
+    background: yellow;
+}
+
+#comboExercisesNav span
+{
+    float: left;
+    border: 1px solid #000000;
+    padding: 10px;
+    margin: 3px;
+}
+
+#comboExercisesNav span:hover
+{
+    background: yellow;
+}
+
+table
+{
+    width: 1000px;
+    border-collapse: collapse;
+    margin-left:auto;
+    margin-right:auto;
+}
+
+table tr td
+{
+    color: #ffffff;
+    border: var(--table-data-pixel-width) solid var(--table-border-color);
+    padding: 10px 15px 10px 15px;
+    text-align: center;
+}
+
+table thead .headerData
+{
+    background-color: var(--table-header-background-color);
+    border: 1px solid var(--table-border-color);
+    font-size: 16px;
+}
+
+table .dataA
+{
+    background-color: var(--table-dataA-color);
+}
+
+table .dataB
+{
+    background-color: var(--table-dataB-color);
+}
+
+table .cardioData
+{
+    background-color: var(--table-dataA-color);
+}
+
+table .exerciseColumn
+{
+    text-align: left;
+}
+
+svg
+{
+    display: block;
+    margin: auto;
+}
+
+svg #dataPoints .selected
+{
+    r: 5;
+}

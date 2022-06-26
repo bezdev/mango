@@ -25,8 +25,7 @@ SECRET_KEY = '2wv-=oa#9%uly=45!afzb5cn6%j9(lg(_4f-9#mjo!=%nsb&hy'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['keefrogers.com', 'www.keefrogers.com']
-
+ALLOWED_HOSTS = ['localhost', '137.184.186.70', 'bezdev.com', 'www.bezdev.com']
 
 # Application definition
 
@@ -81,12 +80,14 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'mango',
-        'USER': 'leo',
+        'USER': 'root',
         'PASSWORD': 'adidas',
         'HOST': '',
         'PORT': '',
     }
 }
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
@@ -106,4 +107,4 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = 'static'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
