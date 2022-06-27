@@ -1,4 +1,5 @@
-prod
+./static
+./prod
 *.pyc
-__pycache__
-deploy.py
+**/__pycache__
+config.json

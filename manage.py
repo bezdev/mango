@@ -2,9 +2,12 @@
 import os
 import sys
 
-if __name__ == "__main__":
+def main(args):
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "mango.settings")
 
     from django.core.management import execute_from_command_line
 
-    execute_from_command_line(sys.argv)
+    execute_from_command_line(args)
+
+if __name__ == "__main__":
+    main(sys.argv)
