@@ -1,5 +1,0 @@
-DROP DATABASE IF EXISTS mango;
-CREATE DATABASE mango;
-#CREATE USER 'leo'@'localhost' IDENTIFIED BY 'adidas';
-GRANT ALL PRIVILEGES ON mango.* TO 'leo'@'localhost';
-FLUSH PRIVILEGES;

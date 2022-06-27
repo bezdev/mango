@@ -1,0 +1,4 @@
+prod
+*.pyc
+__pycache__
+deploy.py
