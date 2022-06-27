@@ -1,5 +1,6 @@
 ./static
 ./prod
+./private
 *.pyc
 **/__pycache__
 config.json

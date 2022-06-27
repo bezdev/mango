@@ -12,7 +12,7 @@ args = parser.parse_args()
 
 OUTPUT_NAME = 'prod'
 BASE_DIR = os.path.dirname(os.path.realpath(__file__))
-CONFIG = BASE_DIR + "/config.json"
+CONFIG = BASE_DIR + "/private/config.json"
 MANAGE_PY = BASE_DIR + "/manage.py"
 OUTPUT_DIR = BASE_DIR + "/" + OUTPUT_NAME + "/"
 OUTPUT_SETTINGS = OUTPUT_DIR + 'mango/settings.py'
