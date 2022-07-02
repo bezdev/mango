@@ -67,7 +67,9 @@ class Branch {
 class Banner {
     constructor(id) {
         this.width = 1000;
-        this.height = 250;
+        this.height = 150;
+        this.maxTrees = 6;
+        this.treeHeightRange = { min: 120, max: 150 };
         this.branchLimit = 10000;
         this.growSpeed = 1000;
         this.branchColor = "#ffffff";
@@ -209,12 +211,8 @@ class Banner {
             this.context.lineCap = 'round';
             this.context.beginPath();
 
-            // how fast can we draw?
-            // why no children when drawing fast
-
             let count = 0;
             let branchCount = this.branchPool.length - this.openBranches.length;
-            // console.log("branches: " + (branchCount));
             for (let i = 0; i < this.branchPool.length; i++) {
                 let branch = this.branchPool[i];
                 if (!branch.isActive) continue;
@@ -227,14 +225,13 @@ class Banner {
                 } else {
                     growSpeed = this.growSpeed;
                 }
-                growSpeed = this.treesDrawn > 5 ? 1000 : growSpeed;
+                growSpeed = this.treesDrawn > 0 ? 1000 : growSpeed;
                 if (growSpeed > 500) growSpeed = 10000;
 
                 let growLength = delta / 1000 * growSpeed;
                 let finalGrow = !!(branch.lengthLeft <= growLength);
                 growLength = finalGrow ? branch.lengthLeft : growLength;
                 branch.lengthLeft -= growLength;
-                //growLength = growLength > branch.length ? branch.length : growLength;
                 let totalGrown = branch.length - branch.lengthLeft;
 
                 let endPoint = branch.getEndPoint(growLength);
@@ -284,7 +281,7 @@ class Banner {
                 if (finalGrow) {
                     if (branch.depth < 3 && !branch.isNeedle) {
                         let needleCount = 0;
-                        if (branch.depth === 0) needleCount = 150;//200;
+                        if (branch.depth === 0) needleCount = (branch.finalBranch === true) ?  500 : 150;//200;
                         else if (branch.depth === 1) needleCount = 50;
                         else if (branch.depth === 2) needleCount = 15;
                         else needleCount = 10;
@@ -312,10 +309,11 @@ class Banner {
         }
     }
 
-    drawTree(x, y, angle, height, color) {
+    drawTree(x, y, angle, height, color, isFinalBranch) {
         let ci = this.addBranch(x, y, angle, height, 0, true);
         //this.addBranchType(ci, 2, "#ffffff");
         this.addBranchType(ci, 2, color);
+        this.branchPool[ci].finalBranch = isFinalBranch;
     }
 
     drawTreeThread(time) {
@@ -329,11 +327,11 @@ class Banner {
         if (search > 0) search = Math.floor(GetRandomBetween(0, 4));
         if (search == 3) {
             banner.stopTrees = true;
-            color = "#e75469"
+            color = "#FFAA1D";
         } else color = "#f9f9f9";
 
-        let bucketId = Math.floor(GetRandomBetween(0, banner.treeBucketCount));
-        banner.drawTree(banner.treeBuckets[bucketId] + PosOrNeg() * GetRandomBetween(0, 15), 0, GetRandomBetween(85, 95), GetRandomBetween(150, 220), color);
+        let bucketId = banner.stopTrees ? banner.treeBucketCount - 1: Math.floor(GetRandomBetween(0, banner.treeBucketCount - 1));
+        banner.drawTree(banner.treeBuckets[bucketId] + PosOrNeg() * GetRandomBetween(5, 25), 0, GetRandomBetween(85, 95), GetRandomInRange(banner.treeHeightRange), color, banner.stopTrees);
     }
 
    static render(currentTime) {
@@ -343,9 +341,8 @@ class Banner {
             banner.frames = 0;
             banner.trees = 0;
             banner.treesDrawn = 0;
-            banner.maxTrees = 16;
             banner.treeBuckets = [];
-            banner.treeBucketCount = Math.floor(GetRandomBetween(3, 10));
+            banner.treeBucketCount = Math.floor(GetRandomBetween(3, 5));
             let margin = 100;
             for (let i = 0; i < banner.treeBucketCount; i++) {
                 banner.treeBuckets.push(GetRandomBetween(0 + margin, banner.width - margin));
@@ -376,7 +373,7 @@ class Banner {
         this.context.clearRect(0, 0, this.width, this.height);
 
         // draw sky
-        var gradientHeight = this.height - 20;
+        var gradientHeight = this.height - 15;
         var sky = this.context.createLinearGradient(0, 0, 0, gradientHeight);
         sky.addColorStop(0, "#000000");
         sky.addColorStop(1, "#11387d");
