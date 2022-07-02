@@ -49,9 +49,8 @@ function Banner(banner) {
         var BRANCH_POSITION =       { min: 0.25, max: 0.75 };
         var BRANCH_DEPTH =          { min: 3,    max: 3    };
         var LEAF_RADIUS = 20;
-        var GROW_SPEED = 2000;//300;
+        var GROW_SPEED = 10;//2000;//300;
         var BRANCH_COLOR = "#ffffff";
-
         var DrawLine = function(p1, p2) {
             context.moveTo(p1.x, p1.y);
             context.lineTo(p2.x, p2.y);
@@ -101,13 +100,14 @@ function Banner(banner) {
             }
 
             var growSinceLastTime = (currentTime - lastTime) / 1000 * GROW_SPEED;
-
+            console.log(growSinceLastTime);
             context.lineWidth = 2; // (BRANCH_DEPTH.max + 1) - branches[i].depth;
             context.lineCap = 'round';
             context.beginPath();
 
             var branchesLeft = false;
 
+            console.log("branches rendering: " + branches.length);
             // iterate through all branches and update those who can grow
             for (var i = 0; i < branches.length; i++) {
                 if (branches[i].lengthLeft <= 0)

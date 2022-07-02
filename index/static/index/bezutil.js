@@ -1,5 +1,33 @@
+class Point {
+    constructor(x, y) {
+        this.x = x;
+        this.y = y;
+    }
+}
+
 function GetRandomInRange(range) {
     return Math.random() * (range.max - range.min) + range.min;
+}
+
+function GetRandomBetween(min, max) {
+    return Math.random() * (max - min) + min;
+}
+
+function GetRandomElementsBetween(count, min, max) {
+    let result = [];
+    for (let i = 0; i < count; i++) {
+        result.push(GetRandomBetween(min, max));
+    }
+
+    return result;
+}
+
+function PosOrNeg() {
+    return Math.random() < 0.5 ? -1 : 1;
+}
+
+function YesOrNow() {
+    return PosOrNegOne() > 0;
 }
 
 function randomColor() {

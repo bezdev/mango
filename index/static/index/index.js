@@ -69,21 +69,14 @@ function loadAssets(dom, isInitialLoad) {
 }
 
 $(document).ready(function() {
-    // set to true so we can load scripts without warning
-    // $.ajaxPrefilter(function(options, originalOptions, jqXHR) {
-    //     options.async = true;
-    // });
-
-    $(document).on("click", "a", function(e) {
+    $(document).on('click', 'a', function(e) {
         if (!this.rel.startsWith("/")) return true;
 
         e.preventDefault();
         fetch(this.href)
         .then(response => response.text())
         .then(text => {
-            // console.log(text);
-            let dom = new DOMParser().parseFromString(text, "text/html");
-            //dom.getElementsByTagName('script')[0].hasAttribute('bez-base')
+            let dom = new DOMParser().parseFromString(text, 'text/html');
             loadAssets(dom, false);
         });
         history.replaceState(null, null, this.rel);
@@ -91,5 +84,5 @@ $(document).ready(function() {
 
     loadAssets(document, true);
 
-    var banner = new Banner("banner");
+    Banner.getInstance().draw();
 });
