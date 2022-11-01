@@ -12,19 +12,19 @@
         {% block head %}
         {% endblock %}
 
-        <script type="text/javascript">
-        </script>
-
         <title>bez</title>
     </head>
 
     <body>
-        <div id="header">
-            <canvas id="banner"></canvas>
-        </div>
+        <div id="page">
+            <div id="header">
+                <canvas id="banner"></canvas>
+                <input id="search" type="text" value="" autofocus />
+            </div>
 
-        <div id="content">
+            <div id="content">
                 {% block content %}
+                <h1>index</h1>
                 {% endblock %}
             </div>
             <div id="footer">

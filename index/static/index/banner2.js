@@ -68,8 +68,9 @@ class Banner {
     constructor(id) {
         this.width = 1000;
         this.height = 150;
-        this.maxTrees = 6;
         this.treeHeightRange = { min: 120, max: 150 };
+        this.treeBucketCount = Math.floor(GetRandomBetween(3, 12));
+        this.maxTrees = this.treeBucketCount < 6 ? 6 : 30;
         this.branchLimit = 10000;
         this.growSpeed = 1000;
         this.branchColor = "#ffffff";
@@ -225,7 +226,7 @@ class Banner {
                 } else {
                     growSpeed = this.growSpeed;
                 }
-                growSpeed = this.treesDrawn > 0 ? 1000 : growSpeed;
+                growSpeed = branch.finalBranch === true ? 300 : growSpeed;
                 if (growSpeed > 500) growSpeed = 10000;
 
                 let growLength = delta / 1000 * growSpeed;
@@ -281,7 +282,7 @@ class Banner {
                 if (finalGrow) {
                     if (branch.depth < 3 && !branch.isNeedle) {
                         let needleCount = 0;
-                        if (branch.depth === 0) needleCount = (branch.finalBranch === true) ?  500 : 150;//200;
+                        if (branch.depth === 0) needleCount = (branch.finalBranch === true) ?  500 : 300;//200;
                         else if (branch.depth === 1) needleCount = 50;
                         else if (branch.depth === 2) needleCount = 15;
                         else needleCount = 10;
@@ -293,6 +294,7 @@ class Banner {
                             let ci = this.addBranch(p.x, p.y, angle, Math.pow(1 - p.y / this.maxHeight, 2) * GetRandomBetween(40, 80), 100, true);
                             this.branchPool[ci].isNeedle = true;
                             this.addBranchType(ci, 1, branch.color);
+                            this.branchPool[ci].finalBranch = branch.finalBranch;
                         }
                     }
 
@@ -327,7 +329,7 @@ class Banner {
         if (search > 0) search = Math.floor(GetRandomBetween(0, 4));
         if (search == 3) {
             banner.stopTrees = true;
-            color = "#FFAA1D";
+            color = "#f9f9f9";
         } else color = "#f9f9f9";
 
         let bucketId = banner.stopTrees ? banner.treeBucketCount - 1: Math.floor(GetRandomBetween(0, banner.treeBucketCount - 1));
@@ -342,7 +344,6 @@ class Banner {
             banner.trees = 0;
             banner.treesDrawn = 0;
             banner.treeBuckets = [];
-            banner.treeBucketCount = Math.floor(GetRandomBetween(3, 5));
             let margin = 100;
             for (let i = 0; i < banner.treeBucketCount; i++) {
                 banner.treeBuckets.push(GetRandomBetween(0 + margin, banner.width - margin));

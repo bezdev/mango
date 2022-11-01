@@ -11,7 +11,7 @@ class WorkoutSession(models.Model):
         ordering = ["-id"]
 
     def __str__(self):
-        return unicode(self.date)
+        return str(self.date)
 
 class WeightExercise(models.Model):
     name = models.CharField(max_length = 50)
@@ -20,20 +20,20 @@ class WeightExercise(models.Model):
         ordering = ["name"]
 
     def __str__(self):
-        return unicode(self.name)
+        return str(self.name)
 
 class CardioExercise(models.Model):
     name = models.CharField(max_length = 20)
 
     def __str__(self):
-        return unicode(self.name)
+        return str(self.name)
 
 class WeightTraining(models.Model):
     workout = models.ForeignKey(WorkoutSession, on_delete=models.PROTECT)
     exercise = models.ForeignKey(WeightExercise, on_delete=models.PROTECT)
 
     def __str__(self):
-        return unicode(self.workout) + " " + unicode(self.exercise)
+        return str(self.workout) + " " + str(self.exercise)
 
 class Set(models.Model):
     training = models.ForeignKey(WeightTraining, on_delete=models.PROTECT)
@@ -42,7 +42,7 @@ class Set(models.Model):
     reps = models.PositiveSmallIntegerField()
 
     def __str__(self):
-        return unicode(self.training) + " Set: " + unicode(self.set) + " " + unicode(self.weight) + "x" + unicode(self.reps)
+        return str(self.training) + " Set: " + str(self.set) + " " + str(self.weight) + "x" + str(self.reps)
 
 class CardioTraining(models.Model):
     workout = models.ForeignKey(WorkoutSession, on_delete=models.PROTECT)
@@ -52,4 +52,4 @@ class CardioTraining(models.Model):
     units = models.CharField(max_length = 10)
 
     def __str__(self):
-        return unicode(self.exercise) + " Time: " + unicode(self.time) + " Distance: " + unicode(self.distance) + " " + self.units
+        return str(self.exercise) + " Time: " + str(self.time) + " Distance: " + str(self.distance) + " " + self.units

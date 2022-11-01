@@ -12,7 +12,7 @@ args = parser.parse_args()
 
 OUTPUT_NAME = 'prod'
 BASE_DIR = os.path.dirname(os.path.realpath(__file__))
-CONFIG = BASE_DIR + "/private/config.json"
+CONFIG = BASE_DIR + "/config/config.json"
 MANAGE_PY = BASE_DIR + "/manage.py"
 OUTPUT_DIR = BASE_DIR + "/" + OUTPUT_NAME + "/"
 OUTPUT_SETTINGS = OUTPUT_DIR + 'mango/settings.py'
@@ -43,6 +43,7 @@ ignore = shutil.ignore_patterns(
     '.git*',
     'deploy.py',
     'prod*',
+    '.venv*'
 )
 shutil.copytree('./', OUTPUT_DIR, ignore=ignore)
 
@@ -61,7 +62,7 @@ with open(OUTPUT_SETTINGS, 'w') as file:
   file.write(filedata)
 
 if (args.deploy):
-    print('deploy...')
+    print('deploy ...')
     # SFTP
     p = subprocess.Popen('sftp ' + SERVER_USER, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 

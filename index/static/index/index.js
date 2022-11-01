@@ -2,6 +2,30 @@ let loadedAssets = [];
 let loadedPages = [];
 let currentContentDiv;
 
+function debounce(callback, delay) {
+    let timeout;
+    return function() {
+        clearTimeout(timeout);
+        timeout = setTimeout(callback, delay);
+    }
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+const csrftoken = getCookie('csrftoken');
+
 function isAssetLoaded(asset) {
     return loadedAssets.indexOf(asset) >= 0;
 }
@@ -14,7 +38,7 @@ function getContentTag(url) {
     return url.replace(/[/?=]/g, "") + "-content";
 }
 
-function loadAssets(dom, isInitialLoad) {
+function loadDom(dom, isInitialLoad) {
     let scripts = dom.getElementsByTagName('script');
     for (var i = 0; i < scripts.length; i++) {
         if (scripts[i].hasAttribute('bez-base')) continue;
@@ -68,21 +92,50 @@ function loadAssets(dom, isInitialLoad) {
     currentContentDiv.style.display = "block";
 }
 
+function loadUrl(url) {
+    fetch(url)
+        .then(response => response.text())
+        .then(text => {
+            let dom = new DOMParser().parseFromString(text, 'text/html');
+            loadDom(dom, false);
+        });
+    history.replaceState(null, null, window.location.origin + url);
+}
+
 $(document).ready(function() {
     $(document).on('click', 'a', function(e) {
         if (!this.rel.startsWith("/")) return true;
 
         e.preventDefault();
-        fetch(this.href)
-        .then(response => response.text())
-        .then(text => {
-            let dom = new DOMParser().parseFromString(text, 'text/html');
-            loadAssets(dom, false);
-        });
-        history.replaceState(null, null, this.rel);
+        loadUrl(this.rel);
     });
 
-    loadAssets(document, true);
+    var searchDebounceFunc = undefined;
+    document.getElementById('search').addEventListener('input', function(e) {
+        var searchFunc = function() {
+            // console.log('e');
+        };
+        if (searchDebounceFunc === undefined) searchDebounceFunc = debounce(searchFunc, 300);
+        searchDebounceFunc();
+    });
+
+    document.getElementById('search').addEventListener('keydown', function(e) {
+        var that = this;
+        if (e.key === 'Enter') {
+            fetch('/search?q=' + this.value)
+            .then(response => response.json())
+            .then(json => {
+                if (json['actions'].length > 0) {
+                }
+                if (json['sites'].length > 0) {
+                    loadUrl(json['sites'][0]);
+                }
+                that.value = '';
+            });
+        }
+    });
+
+    loadDom(document, true);
 
     Banner.getInstance().draw();
 });

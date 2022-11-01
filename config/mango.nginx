@@ -1,0 +1,14 @@
+server {
+    listen 80;
+    server_name 137.184.186.70 bezdev.com www.bezdev.com;
+
+    location = /favicon.ico { access_log off; log_not_found off; }
+    location /static/ {
+        root /home/bez/projects/mango;
+    }
+
+    location / {
+        include proxy_params;
+        proxy_pass http://unix:/run/gunicorn.sock;
+    }
+}
