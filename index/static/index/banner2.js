@@ -69,10 +69,10 @@ class Banner {
         this.width = 1000;
         this.height = 150;
         this.treeHeightRange = { min: 120, max: 150 };
-        this.treeBucketCount = Math.floor(GetRandomBetween(3, 12));
+        this.treeBucketCount = Math.floor(GetRandomBetween(6, 12));
         this.maxTrees = this.treeBucketCount < 6 ? 6 : 30;
         this.branchLimit = 10000;
-        this.growSpeed = 1000;
+        this.growSpeed = 5000;
         this.branchColor = "#ffffff";
         this.needleColor = "#006857";
 
@@ -226,8 +226,8 @@ class Banner {
                 } else {
                     growSpeed = this.growSpeed;
                 }
-                growSpeed = branch.finalBranch === true ? 300 : growSpeed;
-                if (growSpeed > 500) growSpeed = 10000;
+                //growSpeed = branch.finalBranch === true ? 300 : growSpeed;
+                if (growSpeed > 500) growSpeed = 500;
 
                 let growLength = delta / 1000 * growSpeed;
                 let finalGrow = !!(branch.lengthLeft <= growLength);
