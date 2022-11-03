@@ -69,7 +69,7 @@ class Banner {
         this.width = 1000;
         this.height = 150;
         this.treeHeightRange = { min: 120, max: 150 };
-        this.treeBucketCount = Math.floor(GetRandomBetween(6, 12));
+        this.treeBucketCount = Math.floor(GetRandomBetween(6, 7));
         this.maxTrees = this.treeBucketCount < 6 ? 6 : 30;
         this.branchLimit = 10000;
         this.growSpeed = 5000;

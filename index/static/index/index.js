@@ -110,12 +110,19 @@ $(document).ready(function() {
         loadUrl(this.rel);
     });
 
+    var searchFunc = function() { console.log('leo'); }
+    // var searchFunc = function(query) {
+    //     fetch('/search?q=' + query)
+    //     .then(response => response.json())
+    //     .then(json => {
+    //         console.log(json);
+    //     });
+    // };
     var searchDebounceFunc = undefined;
     document.getElementById('search').addEventListener('input', function(e) {
-        var searchFunc = function() {
-            // console.log('e');
-        };
-        if (searchDebounceFunc === undefined) searchDebounceFunc = debounce(searchFunc, 300);
+        // if (searchDebounceFunc === undefined) searchDebounceFunc = function(query) { debounce(searchFunc(query), 1000); };
+        // searchDebounceFunc(this.value);
+        if (searchDebounceFunc === undefined) searchDebounceFunc = debounce(searchFunc, 1000);
         searchDebounceFunc();
     });
 

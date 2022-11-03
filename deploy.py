@@ -59,19 +59,19 @@ filedata = filedata.replace("'USER': 'root',", "'USER': '{}',".format(config['Da
 filedata = filedata.replace("'PASSWORD': 'adidas',", "'PASSWORD': '{}',".format(config['DatabasePassword']))
 
 with open(OUTPUT_SETTINGS, 'w') as file:
-  file.write(filedata)
+    file.write(filedata)
 
 if (args.deploy):
     print('deploy ...')
     # SFTP
-    p = subprocess.Popen('sftp ' + SERVER_USER, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    p = subprocess.Popen(["sftp", SERVER_USER], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
     cmds = [
         'cd ' + SERVER_DIRECTORY,
-        'lcd ' + BASE_DIR,
+        'lcd ' + BASE_DIR + '/prod',
         'pwd',
         'lpwd',
-        'put -r ' + OUTPUT_NAME,
+        'put -r .',
         'quit',
     ]
 
