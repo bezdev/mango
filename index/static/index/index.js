@@ -4,10 +4,10 @@ let currentContentDiv;
 
 function debounce(callback, delay) {
     let timeout;
-    return function() {
+    return (...args) => {
         clearTimeout(timeout);
-        timeout = setTimeout(callback, delay);
-    }
+        timeout = setTimeout(() => { callback.apply(this, args)}, delay);
+    };
 }
 
 function getCookie(name) {
@@ -38,7 +38,26 @@ function getContentTag(url) {
     return url.replace(/[/?=]/g, "") + "-content";
 }
 
-function loadDom(dom, isInitialLoad) {
+function loadDom(dom, url, isInitialLoad) {
+    if (!dom.getElementById("content")) throw 'page not found';
+
+    let contentId = getContentTag(url);
+
+    if (!isPageLoaded(url)) {
+        loadedPages.push(url);
+        let innerHTML = dom.getElementById("content").innerHTML;
+        if (isInitialLoad) {
+            dom.getElementById("content").innerHTML = "";
+        }
+
+        var contentDiv = document.createElement("div");
+        contentDiv.id = contentId;
+        contentDiv.innerHTML = innerHTML;
+        document.querySelector('#content').appendChild(contentDiv);
+    } else {
+        contentDiv = document.getElementById(contentId);
+    }
+
     let scripts = dom.getElementsByTagName('script');
     for (var i = 0; i < scripts.length; i++) {
         if (scripts[i].hasAttribute('bez-base')) continue;
@@ -67,23 +86,6 @@ function loadDom(dom, isInitialLoad) {
         }
     }
 
-    let url = window.location.pathname;
-    let contentId = getContentTag(url);
-    if (!isPageLoaded(url)) {
-        loadedPages.push(url);
-        let innerHTML = dom.getElementById("content").innerHTML;
-        if (isInitialLoad) {
-            dom.getElementById("content").innerHTML = "";
-        }
-
-        var contentDiv = document.createElement("div");
-        contentDiv.id = contentId;
-        contentDiv.innerHTML = innerHTML;
-        document.querySelector('#content').appendChild(contentDiv);
-    } else {
-        contentDiv = document.getElementById(contentId);
-    }
-
     if (!isInitialLoad) {
         currentContentDiv.style.display = "none";
     }
@@ -97,52 +99,128 @@ function loadUrl(url) {
         .then(response => response.text())
         .then(text => {
             let dom = new DOMParser().parseFromString(text, 'text/html');
-            loadDom(dom, false);
+            console.log("loading: " + url);
+            loadDom(dom, url, false);
+            history.replaceState(null, null, window.location.origin + url);
         });
-    history.replaceState(null, null, window.location.origin + url);
+}
+
+let isSearchExecuted = false;
+let isSearchQueued = false;
+let searchResults;
+let searchResultsDiv;
+let selectedSearchResultIndex = 0;
+
+function executeSearch() {
+    isSearchExecuted = false;
+    isSearchQueued = false;
+    loadUrl(searchResults[selectedSearchResultIndex].url);
+    clearSearchResults();
+    document.getElementById("search").value = "";
+}
+
+function clearSearchResults() {
+    searchResultsDiv.innerHTML = "";
+    searchResultsDiv.style.visibility = "hidden";
+    searchResults = [];
+}
+
+function selectSearchResult(index) {
+    if (searchResults.length === 0) return;
+    if (index < 0) index = searchResults.length - 1;
+    if (index >= searchResults.length) index = 0;
+
+    searchResultsDiv.children[selectedSearchResultIndex].style.backgroundColor = "#f9f9f9"
+    selectedSearchResultIndex = index;
+    searchResultsDiv.children[selectedSearchResultIndex].style.backgroundColor = "#dadadd"
+}
+
+function loadSearchResults(results) {
+    console.log({"isSearchQueued": isSearchQueued, "isSearchExecuted": isSearchExecuted});
+    isSearchQueued = false;
+
+    if (results === undefined || results.length === 0) {
+        clearSearchResults();
+        return;
+    }
+
+    searchResults = results;
+    searchResultsDiv.style.visibility = "visible";
+    searchResultsDiv.innerHTML = "";
+
+    for (let i = 0; i < searchResults.length; i++) {
+        let spanDiv = document.createElement("span");
+        spanDiv.innerText = searchResults[i].text;
+        searchResultsDiv.appendChild(spanDiv);
+        if (i === 0) selectSearchResult(0);
+    }
+
+    if (isSearchExecuted) {
+        executeSearch();
+    }
 }
 
 $(document).ready(function() {
-    $(document).on('click', 'a', function(e) {
+    searchResultsDiv = document.getElementById("searchResults");
+
+    $(document).on("click", "a", function(e) {
         if (!this.rel.startsWith("/")) return true;
 
         e.preventDefault();
         loadUrl(this.rel);
     });
 
-    var searchFunc = function() { console.log('leo'); }
-    // var searchFunc = function(query) {
-    //     fetch('/search?q=' + query)
-    //     .then(response => response.json())
-    //     .then(json => {
-    //         console.log(json);
-    //     });
-    // };
-    var searchDebounceFunc = undefined;
-    document.getElementById('search').addEventListener('input', function(e) {
-        // if (searchDebounceFunc === undefined) searchDebounceFunc = function(query) { debounce(searchFunc(query), 1000); };
-        // searchDebounceFunc(this.value);
-        if (searchDebounceFunc === undefined) searchDebounceFunc = debounce(searchFunc, 1000);
-        searchDebounceFunc();
-    });
-
-    document.getElementById('search').addEventListener('keydown', function(e) {
-        var that = this;
-        if (e.key === 'Enter') {
-            fetch('/search?q=' + this.value)
-            .then(response => response.json())
-            .then(json => {
-                if (json['actions'].length > 0) {
-                }
-                if (json['sites'].length > 0) {
-                    loadUrl(json['sites'][0]);
-                }
-                that.value = '';
-            });
+    var searchFunc = function(query) {
+        if (query === undefined || query === '') {
+            clearSearchResults();
+            return;
         }
+
+        fetch(`/search?query=${query}&context=${window.location.pathname}`)
+        .then(response => response.json())
+        .then(json => {
+            loadSearchResults(json["results"]);
+        });
+    };
+    var searchDebounceFunc = undefined;
+    document.getElementById("search").addEventListener("input", function(e) {
+        if (searchDebounceFunc === undefined) searchDebounceFunc = debounce(searchFunc, 169);
+        isSearchQueued = true;
+        searchDebounceFunc(this.value);
     });
 
-    loadDom(document, true);
+    document.getElementById("search").addEventListener("keydown", function(e) {
+        if (e.key === "Enter") {
+            isSearchExecuted = true;
+            if (!isSearchQueued) {
+                if (searchResults && searchResults.length > 0) {
+                    executeSearch();
+                } else {
+                    this.value = "";
+                    isSearchExecuted = false;
+                }
+            }
+            // fetch("/search?q=" + this.value)
+            // .then(response => response.json())
+            // .then(json => {
+            //     if (json["actions"].length > 0) {
+            //     }
+            //     if (json["sites"].length > 0) {
+            //         loadUrl(json["sites"][0]);
+            //     }
+            //     that.value = "";
+            // });
+        } else if (e.key === "ArrowUp") {
+            selectSearchResult(selectedSearchResultIndex - 1);
+        } else if (e.key === "ArrowDown") {
+            selectSearchResult(selectedSearchResultIndex + 1);
+        } else {
+
+        }
+        console.log(e.key);
+    });
+
+    loadDom(document, window.location.pathname, true);
 
     Banner.getInstance().draw();
 });
