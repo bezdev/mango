@@ -55,7 +55,7 @@ with open(OUTPUT_SETTINGS, 'r') as file:
 filedata = filedata.replace("DEBUG = True", "DEBUG = False")
 filedata = filedata.replace("['127.0.0.1']", config["AllowedHosts"])
 filedata = filedata.replace("<SECRET_KEY>", config['SecretKey'])
-filedata = filedata.replace("'USER': 'root',", "'USER': '{}',".format(config['DatabaseUsername']))
+filedata = filedata.replace("'USER': 'leo',", "'USER': '{}',".format(config['DatabaseUsername']))
 filedata = filedata.replace("'PASSWORD': 'adidas',", "'PASSWORD': '{}',".format(config['DatabasePassword']))
 
 with open(OUTPUT_SETTINGS, 'w') as file:

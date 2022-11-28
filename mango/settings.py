@@ -70,11 +70,11 @@ WSGI_APPLICATION = 'mango.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'mango',
-        'USER': 'root',
-        'PASSWORD': 'adidas',
-        'HOST': '',
+        'USER': 'leo',
+        'PASSWORD': 'password',
+        'HOST': 'localhost',
         'PORT': '',
     }
 }

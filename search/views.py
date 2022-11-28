@@ -26,8 +26,8 @@ def search(request):
             results['results'].append({'text': site, 'url': f'/{site}/'})
 
     if context.startswith('/recipes/'):
-        for recipe in Recipe.objects.filter(name__icontains=query).values('name', 'nameSlug'):
-            results['results'].append({'text': recipe["name"], 'url': f'/recipes/{recipe["nameSlug"]}/'})
+        for recipe in Recipe.objects.filter(name__icontains=query).values('name', 'name_slug'):
+            results['results'].append({'text': recipe["name"], 'url': f'/recipes/{recipe["name_slug"]}/'})
 
     return JsonResponse(results)
 

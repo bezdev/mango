@@ -177,7 +177,7 @@ $(document).ready(function() {
         }
 
         fetch(`/search?query=${query}&context=${window.location.pathname}`)
-        .then(response => response.json())
+        .then(response => { return response.json() })
         .then(json => {
             loadSearchResults(json["results"]);
         });
@@ -200,24 +200,11 @@ $(document).ready(function() {
                     isSearchExecuted = false;
                 }
             }
-            // fetch("/search?q=" + this.value)
-            // .then(response => response.json())
-            // .then(json => {
-            //     if (json["actions"].length > 0) {
-            //     }
-            //     if (json["sites"].length > 0) {
-            //         loadUrl(json["sites"][0]);
-            //     }
-            //     that.value = "";
-            // });
         } else if (e.key === "ArrowUp") {
             selectSearchResult(selectedSearchResultIndex - 1);
         } else if (e.key === "ArrowDown") {
             selectSearchResult(selectedSearchResultIndex + 1);
-        } else {
-
         }
-        console.log(e.key);
     });
 
     loadDom(document, window.location.pathname, true);
