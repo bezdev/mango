@@ -4,10 +4,12 @@ from django.http import HttpResponseNotFound
 from django.shortcuts import render
 from bodybuilding.views import decimal_default
 from recipes.models import Recipe
+from notes.models import Note
 
 PUBLIC_SITES = [
     'bodybuilding',
     'recipes',
+    'notes',
 ]
 
 def search(request):
@@ -21,13 +23,17 @@ def search(request):
         'results': [],
     }
 
-    for site in PUBLIC_SITES:
-        if query.lower() in site:
-            results['results'].append({'text': site, 'url': f'/{site}/'})
-
     if context.startswith('/recipes/'):
         for recipe in Recipe.objects.filter(name__icontains=query).values('name', 'name_slug'):
             results['results'].append({'text': recipe["name"], 'url': f'/recipes/{recipe["name_slug"]}/'})
+
+    if context.startswith('/notes/'):
+        for note in Note.objects.filter(name__icontains=query).values('name', 'name_slug'):
+            results['results'].append({'text': note["name"], 'url': f'/notes/{note["name_slug"]}/'})
+
+    for site in PUBLIC_SITES:
+        if query.lower() in site:
+            results['results'].append({'text': site, 'url': f'/{site}/'})
 
     return JsonResponse(results)
 

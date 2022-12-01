@@ -4,8 +4,8 @@ from django.template.defaultfilters import slugify
 
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
-    fields = ('createdate', 'name', 'ingredientsText', 'directionsText')
+    fields = ('create_date', 'name', 'ingredients_text', 'directions_text')
 
     def save_model(self, request, obj, form, change):
-        obj.nameSlug = slugify(obj.name)
+        obj.name_slug = slugify(obj.name)
         obj.save()

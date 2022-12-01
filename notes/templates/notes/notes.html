@@ -1,0 +1,7 @@
+{% extends "index/index.html" %}
+    {% block content %}
+        <h1>Notes:</h1>
+        {% for note in notes %}
+            <h1>{{ note }}</h1>
+        {% endfor %}
+    {% endblock %}

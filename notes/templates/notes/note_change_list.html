@@ -1,0 +1,38 @@
+{% extends 'admin/change_form.html' %}
+{% load static %}
+
+{% block admin_change_form_document_ready %}
+{{ block.super }}
+<script>
+    const noteTextElement = document.getElementById("id_text");
+
+    const getNoteSelection = () => {
+        return { "start": noteTextElement.selectionStart, "end": noteTextElement.selectionEnd };
+    }
+
+    const prefixAndSuffixSelection = (textBefore, textAfter) => {
+        let selection = getNoteSelection();
+        let text = noteTextElement.value;
+        text = text.slice(0, selection.start) + textBefore + text.slice(selection.start, selection.end) + textAfter + text.slice(selection.end, text.length - 1);
+        noteTextElement.value = text;
+    }
+
+    const createButton = (text, onclick) => {
+        let button = document.createElement("button");
+        button.type = "button";
+        button.innerText = text;
+        button.onclick = onclick;
+        button.style.marginRight = "10px";
+        return button;
+    };
+
+    const createNoteToolbar = () => {
+        let toolBar = document.createElement("div");
+        toolBar.appendChild(createButton("H1", () => { prefixAndSuffixSelection("<h1>", "</h1>"); }));
+        toolBar.appendChild(createButton("LIST", () => { prefixAndSuffixSelection("<list>\n", "\n</list>\n"); }));
+        return toolBar;
+    };
+
+    noteTextElement.parentNode.insertBefore(createNoteToolbar(), noteTextElement);
+</script>
+{% endblock %}

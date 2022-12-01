@@ -97,14 +97,6 @@ body
     height: auto;
 }
 
-#content h1
-{
-    font-family: Verdana;
-    margin: 0;
-    text-align: center;
-    color: #000000;
-}
-
 #footer
 {
     border-top: 3px solid #ffffff;

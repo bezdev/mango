@@ -29,6 +29,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'index',
     'life',
+    'notes',
     'search',
     'bodybuilding',
     'recipes'

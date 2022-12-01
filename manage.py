@@ -3,6 +3,8 @@ import os
 import sys
 
 def main(args):
+    print('bez start')
+
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "mango.settings")
 
     from django.core.management import execute_from_command_line

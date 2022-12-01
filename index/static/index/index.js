@@ -2,6 +2,28 @@ let loadedAssets = [];
 let loadedPages = [];
 let currentContentDiv;
 
+function copyToClipboard(text) {
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(text);
+        return;
+    }
+
+    var textArea = document.createElement("textarea");
+    textArea.value = text;
+    textArea.style.top = "0";
+    textArea.style.left = "0";
+    textArea.style.position = "fixed";
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    try {
+        document.execCommand('copy');
+    } catch (err) {
+        console.error('copy failed');
+    }
+    
+    document.body.removeChild(textArea);
+} 
 function debounce(callback, delay) {
     let timeout;
     return (...args) => {
@@ -99,7 +121,6 @@ function loadUrl(url) {
         .then(response => response.text())
         .then(text => {
             let dom = new DOMParser().parseFromString(text, 'text/html');
-            console.log("loading: " + url);
             loadDom(dom, url, false);
             history.replaceState(null, null, window.location.origin + url);
         });
@@ -136,7 +157,6 @@ function selectSearchResult(index) {
 }
 
 function loadSearchResults(results) {
-    console.log({"isSearchQueued": isSearchQueued, "isSearchExecuted": isSearchExecuted});
     isSearchQueued = false;
 
     if (results === undefined || results.length === 0) {
