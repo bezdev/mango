@@ -1,6 +1,6 @@
 prod
 .venv
-static
+/static
 *config.json
 *.pyc
 **/__pycache__

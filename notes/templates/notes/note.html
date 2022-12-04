@@ -1,22 +1,21 @@
 {% extends "index/index.html" %}
     {% block head %}
     {% load static %}
+    {% load markdown %}
     <script type="text/javascript" src="{% static 'notes/note.js' %}"></script>
     <link rel="stylesheet" type="text/css" href="{% static 'notes/default.css' %}" />
 
     <script type="text/javascript">
         function Initialize() {
-            text = '{{ note.text | escapejs }}';
-            lineEnding = "\n";
-            if (text.includes("\r\n")) {
-                lineEnding = "\r\n";
-            }
-            lines = text.split(lineEnding);
-            createNote(lines);
+            $('#note > p, #note > ol > li').click((event) => {
+                copyToClipboard(event.target.innerText);
+            });
         }
     </script>
     {% endblock %}
 
     {% block content %}
-        <div id="note"></div>
+        <div id="note">
+            {{ note.text | markdown | safe }}
+        </div>
     {% endblock %}

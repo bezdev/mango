@@ -1,0 +1,30 @@
+#note > p, li {
+    margin-left: 10px;
+    font: 100% arial, sans-serif;
+}
+
+#note > ol {
+    margin-left: 10px;
+    list-style: decimal;
+}
+
+
+#note p:hover,li:hover {
+    background-color: #add8e8;
+    transition: background-color 500ms linear;
+    cursor: pointer;
+}
+
+#note > h1 {
+    font: 200% arial, sans-serif;
+    margin: 10px;
+    color: #11387d;;
+}
+
+#note > pre {
+    margin-left: 10px;
+}
+
+#note > code {
+    font: 100%;
+}

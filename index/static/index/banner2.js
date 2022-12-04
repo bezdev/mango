@@ -69,8 +69,8 @@ class Banner {
         this.width = 1000;
         this.height = 150;
         this.treeHeightRange = { min: 120, max: 150 };
-        this.treeBucketCount = Math.floor(GetRandomBetween(6, 7));
-        this.maxTrees = this.treeBucketCount < 6 ? 6 : 30;
+        this.treeBucketCount = Math.floor(GetRandomBetween(5, 8));
+        this.maxTrees = this.treeBucketCount * 19;
         this.branchLimit = 10000;
         this.growSpeed = 5000;
         this.branchColor = "#ffffff";
@@ -222,7 +222,7 @@ class Banner {
 
                 let growSpeed = 0;
                 if (branch.isNeedle) {
-                    growSpeed = this.growSpeed * .3;
+                    growSpeed = this.growSpeed * 50; //.03;
                 } else {
                     growSpeed = this.growSpeed;
                 }
@@ -313,27 +313,33 @@ class Banner {
 
     drawTree(x, y, angle, height, color, isFinalBranch) {
         let ci = this.addBranch(x, y, angle, height, 0, true);
-        //this.addBranchType(ci, 2, "#ffffff");
         this.addBranchType(ci, 2, color);
         this.branchPool[ci].finalBranch = isFinalBranch;
     }
 
-    drawTreeThread(time) {
+    drawTreeThread() {
         let banner = Banner.getInstance();
         if (banner.stopTrees) return;
-        if (banner.trees == 3 && banner.treesDrawn < 3) return;
-        banner.trees++;
-        let search = -1;
-        let color;
-        if (banner.trees > banner.maxTrees) search = 1;
-        if (search > 0) search = Math.floor(GetRandomBetween(0, 4));
-        if (search == 3) {
-            banner.stopTrees = true;
-            color = "#f9f9f9";
-        } else color = "#f9f9f9";
+        let treesLeft = banner.maxTrees - banner.treesDrawn;
+        let treesToDraw = 5;
+        treesToDraw = treesToDraw > treesLeft ? treesLeft : treesToDraw;
+        let color = "#f9f9f9";
 
-        let bucketId = banner.stopTrees ? banner.treeBucketCount - 1: Math.floor(GetRandomBetween(0, banner.treeBucketCount - 1));
-        banner.drawTree(banner.treeBuckets[bucketId] + PosOrNeg() * GetRandomBetween(5, 25), 0, GetRandomBetween(85, 95), GetRandomInRange(banner.treeHeightRange), color, banner.stopTrees);
+        for (let i = 0; i < treesToDraw; i++) {
+            setTimeout(() => {  
+                banner.drawTree(
+                    banner.trees[banner.treesDrawn + i],
+                    0,
+                    GetRandomBetween(85, 95),
+                    GetRandomInRange(banner.treeHeightRange),
+                    color,
+                    banner.stopTrees);
+             }, banner.isFirstFrame ? 0 : GetRandomBetween(100, 500));
+            
+        }
+
+        banner.treesDrawn += treesToDraw;
+        if (banner.treesDrawn >= banner.maxTrees) banner.stopTrees = true;
     }
 
    static render(currentTime) {
@@ -341,20 +347,26 @@ class Banner {
 
         if (banner.isFirstFrame) {
             banner.frames = 0;
-            banner.trees = 0;
             banner.treesDrawn = 0;
-            banner.treeBuckets = [];
+            banner.trees = [];
             let margin = 100;
             for (let i = 0; i < banner.treeBucketCount; i++) {
-                banner.treeBuckets.push(GetRandomBetween(0 + margin, banner.width - margin));
+                let treesPerBucket = banner.maxTrees / banner.treeBucketCount;
+                let bucketPosition = GetRandomBetween(0 + margin, banner.width - margin);
+                for (let j = 0; j < treesPerBucket; j++) {
+                    banner.trees.push(bucketPosition + PosOrNeg() * GetRandomBetween(5, 25))
+                }
             }
+            banner.trees.sort(() => (Math.random() > .5) ? 1 : -1);
+
             banner.stopTrees = false;
             banner.timer = new Timer(currentTime);
-            banner.timer.createRecurringTimer(1000, function(time) {
-                // console.log("FPS: " + banner.frames * 1000.0 / time);
-                banner.frames = 0;
-            });
-            banner.timer.createRecurringTimer(1, function(time) { banner.drawTreeThread(time); });
+            // banner.timer.createRecurringTimer(1000, function(time) {
+            //     console.log("FPS: " + banner.frames * 1000.0 / time);
+            //     banner.frames = 0;
+            // });
+            banner.drawTreeThread();
+            banner.timer.createRecurringTimer(250, function() { banner.drawTreeThread(); });
         } else {
             banner.frames++;
             banner.timer.updateTime(currentTime);
@@ -383,7 +395,6 @@ class Banner {
 
         sky = this.context.createLinearGradient(0, gradientHeight, 0, this.height);
         sky.addColorStop(0, "#11387d");
-        // sky.addColorStop(1, "#e03569");
         sky.addColorStop(1, this.needleColor);
         this.context.fillStyle = sky;
         this.context.fillRect(0, gradientHeight, this.width, this.height);

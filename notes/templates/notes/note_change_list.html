@@ -10,12 +10,41 @@
         return { "start": noteTextElement.selectionStart, "end": noteTextElement.selectionEnd };
     }
 
-    const prefixAndSuffixSelection = (textBefore, textAfter) => {
+    const addPrefixAndSuffixToSelection = (textBefore, textAfter) => {
+        if (!textAfter) textAfter = "";
         let selection = getNoteSelection();
         let text = noteTextElement.value;
         text = text.slice(0, selection.start) + textBefore + text.slice(selection.start, selection.end) + textAfter + text.slice(selection.end, text.length - 1);
         noteTextElement.value = text;
     }
+
+    const addPrefixToLinesInSelection = (prefix) => {
+        let text = noteTextElement.value;
+        let selection = getNoteSelection();
+        // get the true start and end indices which are the new lines surrounding the selection
+
+        let trueStartIndex = text.substring(0, selection.start).lastIndexOf("\n");
+        selection.start = trueStartIndex >= 0 ? trueStartIndex : 0;
+        let trueEndIndex = text.substring(selection.end, text.length - 1).indexOf("\n");
+        selection.end = trueEndIndex >= 0 ? selection.end + trueEndIndex : text.length;
+    
+        lineStartIndexes = [ selection.start ];
+        let substring = text.substring(selection.start, selection.end);
+        let regex = /\n/gi;
+        let result;
+        while ((result = regex.exec(substring))) {
+            lineStartIndexes.push(selection.start + result.index + 1);
+        }
+        lineStartIndexes.push(selection.end);
+        result = ""
+        for (let i = 0; i < lineStartIndexes.length - 1; i++) {
+            result = prefix + substring.slice(
+                lineStartIndexes[lineStartIndexes.length - 2 - i],
+                lineStartIndexes[lineStartIndexes.length - 1 - i]) + result;
+        }
+
+        noteTextElement.value = text.slice(0, selection.start) + result + text.slice(selection.end, text.length - 1);
+    };
 
     const createButton = (text, onclick) => {
         let button = document.createElement("button");
@@ -28,8 +57,10 @@
 
     const createNoteToolbar = () => {
         let toolBar = document.createElement("div");
-        toolBar.appendChild(createButton("H1", () => { prefixAndSuffixSelection("<h1>", "</h1>"); }));
-        toolBar.appendChild(createButton("LIST", () => { prefixAndSuffixSelection("<list>\n", "\n</list>\n"); }));
+        toolBar.appendChild(createButton("H1", () => { addPrefixAndSuffixToSelection("<h1>", "</h1>"); }));
+        toolBar.appendChild(createButton("LIST", () => { addPrefixAndSuffixToSelection("<list>\n", "\n</list>\n"); }));
+        toolBar.appendChild(createButton("TAB", () => { addPrefixToLinesInSelection("    "); }));
+        
         return toolBar;
     };
 

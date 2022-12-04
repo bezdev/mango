@@ -7,15 +7,11 @@ padding: 0;
 p
 {
     font-family: Verdana;
-    margin: 10px;
     text-align: justify;
-    color: #cccccc;
 }
 
 body
 {
-    font: 85% arial, sans-serif;
-    color: #000000;
     background-color: #f9f9f9;
 }
 
@@ -105,6 +101,7 @@ body
 
 #footer h4
 {
+    font: 85% arial, sans-serif;
     padding: 2px;
     text-align: center;
     color: #ffffff;
