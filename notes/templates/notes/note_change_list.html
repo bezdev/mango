@@ -8,7 +8,13 @@
 
     const getNoteSelection = () => {
         return { "start": noteTextElement.selectionStart, "end": noteTextElement.selectionEnd, "isSelected": () => noteTextElement.selectionStart !== noteTextElement.selectionEnd };
-    }
+    };
+
+    const getSelectionText = () => {
+        let selection = getNoteSelection();
+        if (selection.isSelected) return noteTextElement.value.substring(selection.start, selection.end);
+        else return "";
+    };
 
     const addPrefixAndSuffixToSelection = (textBefore, textAfter) => {
         if (!textAfter) textAfter = "";
@@ -16,7 +22,7 @@
         let text = noteTextElement.value;
         text = text.slice(0, selection.start) + textBefore + text.slice(selection.start, selection.end) + textAfter + text.slice(selection.end, text.length - 1);
         noteTextElement.value = text;
-    }
+    };
 
     const getTrueLineSelection = (text, selection) => {
         // get the true start and end indices which are the new lines surrounding the selection
@@ -27,18 +33,6 @@
 
         return selection;
     }
-
-    // const getLineStartIndexes = (substring, selection) => {
-    //     lineStartIndexes = [ 0 ];
-    //     let regex = /\n/gi;
-    //     let result;
-    //     while ((result = regex.exec(substring))) {
-    //         lineStartIndexes.push(result.index + 1);
-    //     }
-    //     lineStartIndexes.push(selection.end - selection.start);
-
-    //     return lineStartIndexes;
-    // }
 
     const addPrefixSuffixToLineSelection = (prefix, suffix) => {
         if (!suffix) suffix = "";
@@ -123,9 +117,12 @@
             if (numLE) alert(`bad line endings: ${numLE}`);
         }));
         toolBar.appendChild(createButton("H1", () => { addPrefixSuffixToLineSelection("#"); }));
+        toolBar.appendChild(createButton("H2", () => { addPrefixSuffixToLineSelection("##"); }));
+        toolBar.appendChild(createButton("NEWLINE", () => { addPrefixSuffixToLineSelection("", "\n"); }));
         toolBar.appendChild(createButton("LIST", () => { addNumbersToLineSelection(); }));
         toolBar.appendChild(createButton("CODE", () => { addPrefixSuffixToLineSelection("`", "`"); }));
-        
+        toolBar.appendChild(createButton("LINK", () => { addPrefixAndSuffixToSelection(`[${getSelectionText()}](`, ")"); }));
+
         return toolBar;
     };
 

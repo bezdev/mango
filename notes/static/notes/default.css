@@ -1,7 +1,12 @@
-#note > p, li {
+#note > p {
     margin-left: 20px;
     font: 100% arial, sans-serif;
     display: table;
+}
+
+#note > ol > li {
+    margin-left: 20px;
+    font: 100% arial, sans-serif;
 }
 
 #note > ol {
@@ -31,7 +36,7 @@
 }
 
 #note > pre {
-    margin-left: 10px;
+    margin-left: 20px;
 }
 
 #note > code {
