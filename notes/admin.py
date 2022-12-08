@@ -18,7 +18,7 @@ class NoteAdmin(admin.ModelAdmin):
     ]
 
     formfield_overrides = {
-        models.TextField: {'widget': Textarea(attrs={'rows':100, 'cols':80})},
+        models.TextField: {'widget': Textarea(attrs={'rows':25, 'cols':80})},
     }
 
     def save_model(self, request, obj, form, change):

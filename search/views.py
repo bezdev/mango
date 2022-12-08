@@ -1,8 +1,6 @@
-from os import truncate
+from django.db.models import Q
 from django.http import JsonResponse
 from django.http import HttpResponseNotFound
-from django.shortcuts import render
-from bodybuilding.views import decimal_default
 from recipes.models import Recipe
 from notes.models import Note
 
@@ -28,7 +26,7 @@ def search(request):
             results['results'].append({'text': recipe["name"], 'url': f'/recipes/{recipe["name_slug"]}/'})
 
     if context.startswith('/notes/'):
-        for note in Note.objects.filter(name__icontains=query).values('name', 'name_slug'):
+        for note in Note.objects.filter(Q(name__icontains=query) | Q(text__search=query)).values('name', 'name_slug'):
             results['results'].append({'text': note["name"], 'url': f'/notes/{note["name_slug"]}/'})
 
     for site in PUBLIC_SITES:

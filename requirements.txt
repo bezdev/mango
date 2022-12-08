@@ -10,6 +10,7 @@ idna==3.4
 isort==5.10.1
 lazy-object-proxy==1.8.0
 lxml==4.9.1
+Markdown==3.4.1
 mccabe==0.7.0
 mysqlclient==2.1.1
 platformdirs==2.5.4

@@ -7,7 +7,7 @@
     const noteTextElement = document.getElementById("id_text");
 
     const getNoteSelection = () => {
-        return { "start": noteTextElement.selectionStart, "end": noteTextElement.selectionEnd };
+        return { "start": noteTextElement.selectionStart, "end": noteTextElement.selectionEnd, "isSelected": () => noteTextElement.selectionStart !== noteTextElement.selectionEnd };
     }
 
     const addPrefixAndSuffixToSelection = (textBefore, textAfter) => {
@@ -18,32 +18,92 @@
         noteTextElement.value = text;
     }
 
-    const addPrefixToLinesInSelection = (prefix) => {
-        let text = noteTextElement.value;
-        let selection = getNoteSelection();
+    const getTrueLineSelection = (text, selection) => {
         // get the true start and end indices which are the new lines surrounding the selection
-
         let trueStartIndex = text.substring(0, selection.start).lastIndexOf("\n");
-        selection.start = trueStartIndex >= 0 ? trueStartIndex : 0;
+        selection.start = trueStartIndex >= 0 ? trueStartIndex + 1 : 0;
         let trueEndIndex = text.substring(selection.end, text.length - 1).indexOf("\n");
         selection.end = trueEndIndex >= 0 ? selection.end + trueEndIndex : text.length;
-    
-        lineStartIndexes = [ selection.start ];
+
+        return selection;
+    }
+
+    // const getLineStartIndexes = (substring, selection) => {
+    //     lineStartIndexes = [ 0 ];
+    //     let regex = /\n/gi;
+    //     let result;
+    //     while ((result = regex.exec(substring))) {
+    //         lineStartIndexes.push(result.index + 1);
+    //     }
+    //     lineStartIndexes.push(selection.end - selection.start);
+
+    //     return lineStartIndexes;
+    // }
+
+    const addPrefixSuffixToLineSelection = (prefix, suffix) => {
+        if (!suffix) suffix = "";
+
+        let text = noteTextElement.value;
+        let selection = getNoteSelection();
+
+        selection = getTrueLineSelection(text, selection);
         let substring = text.substring(selection.start, selection.end);
-        let regex = /\n/gi;
-        let result;
-        while ((result = regex.exec(substring))) {
-            lineStartIndexes.push(selection.start + result.index + 1);
-        }
-        lineStartIndexes.push(selection.end);
-        result = ""
-        for (let i = 0; i < lineStartIndexes.length - 1; i++) {
-            result = prefix + substring.slice(
-                lineStartIndexes[lineStartIndexes.length - 2 - i],
-                lineStartIndexes[lineStartIndexes.length - 1 - i]) + result;
+
+        let result = "";
+        let split = substring.split("\n");
+        for (let i = 0; i < split.length; i++) {
+            result += prefix + split[i] + suffix;
+            if (i < split.length - 1) result += "\n";
         }
 
-        noteTextElement.value = text.slice(0, selection.start) + result + text.slice(selection.end, text.length - 1);
+        noteTextElement.value = text.substring(0, selection.start) + result + text.substring(selection.end, text.length);
+        noteTextElement.setSelectionRange(selection.start, selection.start + result.length);
+    };
+
+    const addNumbersToLineSelection = () => {
+        let text = noteTextElement.value;
+        let selection = getNoteSelection();
+
+        selection = getTrueLineSelection(text, selection);
+        let substring = text.substring(selection.start, selection.end);
+
+        let result = "";
+        let split = substring.split("\n");
+        for (let i = 0; i < split.length; i++) {
+            result += `${i + 1}. ` + split[i];
+            if (i < split.length - 1) result += "\n";
+        }
+
+        noteTextElement.value = text.substring(0, selection.start) + result + text.substring(selection.end, text.length);
+        noteTextElement.setSelectionRange(selection.start, selection.start + result.length);
+    };
+
+    const removeTabInLineSelection = () => {
+        let text = noteTextElement.value;
+        let selection = getNoteSelection();
+
+        selection = getTrueLineSelection(text, selection);
+        let substring = text.substring(selection.start, selection.end);
+
+        let result = "";
+        let split = substring.split("\n");
+        for (let i = 0; i < split.length; i++) {
+            let line = split[i];
+            // remove at most 4 spaces
+            let numSpaces = 0;
+            while (numSpaces < 4) {
+                if (line[numSpaces] === " ") numSpaces++;
+                else break;
+            }
+
+            line = line.substring(numSpaces);
+
+            result += line;
+            if (i < split.length - 1) result += "\n";
+        }
+
+        noteTextElement.value = text.substring(0, selection.start) + result + text.substring(selection.end, text.length);
+        noteTextElement.setSelectionRange(selection.start, selection.start + result.length);
     };
 
     const createButton = (text, onclick) => {
@@ -57,13 +117,35 @@
 
     const createNoteToolbar = () => {
         let toolBar = document.createElement("div");
-        toolBar.appendChild(createButton("H1", () => { addPrefixAndSuffixToSelection("<h1>", "</h1>"); }));
-        toolBar.appendChild(createButton("LIST", () => { addPrefixAndSuffixToSelection("<list>\n", "\n</list>\n"); }));
-        toolBar.appendChild(createButton("TAB", () => { addPrefixToLinesInSelection("    "); }));
+        toolBar.appendChild(createButton("NLE", () => {
+            let numLE = noteTextElement.value.matchAll(/\n/gi).length;
+            noteTextElement.value = noteTextElement.value.replaceAll("\r\n", "\n");
+            if (numLE) alert(`bad line endings: ${numLE}`);
+        }));
+        toolBar.appendChild(createButton("H1", () => { addPrefixSuffixToLineSelection("#"); }));
+        toolBar.appendChild(createButton("LIST", () => { addNumbersToLineSelection(); }));
+        toolBar.appendChild(createButton("CODE", () => { addPrefixSuffixToLineSelection("`", "`"); }));
         
         return toolBar;
     };
 
     noteTextElement.parentNode.insertBefore(createNoteToolbar(), noteTextElement);
+    
+    keyDownMap = {};
+    noteTextElement.onkeydown = noteTextElement.onkeyup = function(event) {
+        keyDownMap[event.keyCode] = event.type === "keydown";
+
+        if (keyDownMap[9] && keyDownMap[16]) {
+            event.preventDefault();
+            removeTabInLineSelection();
+        } else if (keyDownMap[9]) {
+            event.preventDefault();
+            addPrefixSuffixToLineSelection("    ");
+        } else if (keyDownMap[192]) {
+            // if (getNoteSelection.isSelected) addPrefixSuffixToLineSelection("`", "`");
+        } 
+
+        //console.log(event.keyCode);
+    };
 </script>
 {% endblock %}

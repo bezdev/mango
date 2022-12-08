@@ -128,6 +128,7 @@ function loadUrl(url) {
 
 let isSearchExecuted = false;
 let isSearchQueued = false;
+let searchQuery;
 let searchResults;
 let searchResultsDiv;
 let selectedSearchResultIndex = 0;
@@ -136,6 +137,7 @@ function executeSearch() {
     isSearchExecuted = false;
     isSearchQueued = false;
     loadUrl(searchResults[selectedSearchResultIndex].url);
+    selectedSearchResultIndex = 0;
     clearSearchResults();
     document.getElementById("search").value = "";
 }
@@ -163,6 +165,18 @@ function loadSearchResults(results) {
         clearSearchResults();
         return;
     }
+
+    // order results
+    results.sort((a, b) => {
+        let aContainsSearchQuery = a.text.indexOf(searchQuery) >= 0;
+        let bContainsSearchQuery = b.text.indexOf(searchQuery) >= 0;
+        if (aContainsSearchQuery && !bContainsSearchQuery) return -1
+        else if (!aContainsSearchQuery && bContainsSearchQuery) return 1;
+
+        if (a.text < b.text) return -1;
+        else if (a.text > b.text) return 1;
+        else return 0;
+    });
 
     searchResults = results;
     searchResultsDiv.style.visibility = "visible";
@@ -196,6 +210,7 @@ $(document).ready(function() {
             return;
         }
 
+        searchQuery = query;
         fetch(`/search?query=${query}&context=${window.location.pathname}`)
         .then(response => { return response.json() })
         .then(json => {
@@ -223,6 +238,9 @@ $(document).ready(function() {
         } else if (e.key === "ArrowUp") {
             selectSearchResult(selectedSearchResultIndex - 1);
         } else if (e.key === "ArrowDown") {
+            selectSearchResult(selectedSearchResultIndex + 1);
+        } else if (e.key === "Tab") {
+            e.preventDefault();
             selectSearchResult(selectedSearchResultIndex + 1);
         }
     });
