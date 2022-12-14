@@ -21,9 +21,10 @@ function copyToClipboard(text) {
     } catch (err) {
         console.error('copy failed');
     }
-    
+
     document.body.removeChild(textArea);
-} 
+}
+
 function debounce(callback, delay) {
     let timeout;
     return (...args) => {

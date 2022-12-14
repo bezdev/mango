@@ -1,8 +1,13 @@
 server {
-    listen 80;
     server_name 137.184.186.70 bezdev.com www.bezdev.com;
 
     location = /favicon.ico { access_log off; log_not_found off; }
+
+    location /files {
+        root /home/bez/projects/mango;
+        access_log off;
+    }
+
     location /static/ {
         root /home/bez/projects/mango;
     }
@@ -11,4 +16,27 @@ server {
         include proxy_params;
         proxy_pass http://unix:/run/gunicorn.sock;
     }
+
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/bezdev.com/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/bezdev.com/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+
+}
+server {
+    if ($host = www.bezdev.com) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+    if ($host = bezdev.com) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+    listen 80;
+    server_name 137.184.186.70 bezdev.com www.bezdev.com;
+    return 404; # managed by Certbot
 }

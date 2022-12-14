@@ -1,7 +1,15 @@
 {% extends "index/index.html" %}
+    {% block head %}
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'notes/default.css' %}" />
+    <script type="text/javascript">
+    </script>
+    {% endblock %}
+
     {% block content %}
-        <h1>Notes:</h1>
+        <div id="notes">
         {% for note in notes %}
-            <h1>{{ note }}</h1>
+            <a href={{ note.name_slug }}>{{ note.name }}</h1><br>
         {% endfor %}
+        </div>
     {% endblock %}

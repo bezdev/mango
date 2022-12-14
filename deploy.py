@@ -41,6 +41,7 @@ ignore = shutil.ignore_patterns(
     '.git*',
     'deploy.py',
     'prod*',
+    'files*',
     '.venv*',
     '.vscode'
 )
@@ -68,7 +69,7 @@ if (args.deploy):
     print('deleting files on server ...')
     cmds = [
         'cd ' + SERVER_DIRECTORY,
-        'find . ! -path "./.venv*" -type d -exec rm -f -r {} +',
+        'find . ! -path "./.venv*" ! -path "./files*" -type d -exec rm -f -r {} +',
         'echo "delete completed."'
     ]
     for cmd in cmds:

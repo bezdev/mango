@@ -4,6 +4,29 @@
 {% block admin_change_form_document_ready %}
 {{ block.super }}
 <script>
+    function copyToClipboard(text) {
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(text);
+            return;
+        }
+
+        var textArea = document.createElement("textarea");
+        textArea.value = text;
+        textArea.style.top = "0";
+        textArea.style.left = "0";
+        textArea.style.position = "fixed";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        try {
+            document.execCommand('copy');
+        } catch (err) {
+            console.error('copy failed');
+        }
+
+        document.body.removeChild(textArea);
+    }
+
     const noteTextElement = document.getElementById("id_text");
 
     const getNoteSelection = () => {
@@ -127,7 +150,15 @@
     };
 
     noteTextElement.parentNode.insertBefore(createNoteToolbar(), noteTextElement);
-    
+
+    let files = document.getElementsByClassName('file-upload');
+    for (let i = 0; i < files.length; i++) {
+        files[i].appendChild(createButton("COPY", (event) => { 
+            let url = event.target.parentElement.getElementsByTagName('a')[0].href;
+            let markdownUrl = `![${url.substring(url.lastIndexOf('/'))}](${url})`
+            copyToClipboard(markdownUrl);
+        }));
+    }
     keyDownMap = {};
     noteTextElement.onkeydown = noteTextElement.onkeyup = function(event) {
         keyDownMap[event.keyCode] = event.type === "keydown";

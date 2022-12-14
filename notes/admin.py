@@ -1,11 +1,15 @@
 from django.contrib import admin
 from django.db import models
 from django.forms import Textarea
-from notes.models import Note, Tag
 from django.template.defaultfilters import slugify
+from notes.models import Note, Tag, File
 
 class TagInline(admin.TabularInline):
     model = Tag
+
+class ImageInline(admin.StackedInline):
+    model = File
+    extra = 0
 
 @admin.register(Note)
 class NoteAdmin(admin.ModelAdmin):
@@ -15,6 +19,7 @@ class NoteAdmin(admin.ModelAdmin):
 
     inlines = [
         TagInline,
+        ImageInline
     ]
 
     formfield_overrides = {

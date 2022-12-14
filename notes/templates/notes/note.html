@@ -7,7 +7,7 @@
 
     <script type="text/javascript">
         function Initialize() {
-            $('#note > p, #note > ol > li').click((event) => {
+            $('code').click((event) => {
                 copyToClipboard(event.target.innerText);
             });
         }

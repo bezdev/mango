@@ -1,44 +1,73 @@
-#note > p {
-    margin-left: 20px;
-    font: 100% arial, sans-serif;
-    display: table;
-}
-
-#note > ol > li {
-    margin-left: 20px;
-    font: 100% arial, sans-serif;
-}
-
-#note > ol {
-    margin-left: 0px;
-    list-style: decimal;
-    list-style-position: inside;
-}
-
-#note p:hover,li:hover {
-    background-color: #add8e8;
-    transition: background-color 500ms linear;
-    cursor: pointer;
-}
-
-#note > h1 {
-    margin-top: 10px;
-    margin-left: 10px;
-    font: 200% arial, sans-serif;
-    color: #11387d;;
-}
-
-#note > h2 {
+#notes h1 {
     margin-top: 10px;
     margin-left: 15px;
     font: arial, sans-serif;
     color: #11387d;;
 }
 
-#note > pre {
+#notes a {
+    margin-left: 20px;
+    font: 200% arial, sans-serif;
+}
+
+#note p {
+    margin-left: 20px;
+    font: 100% arial, sans-serif;
+    display: table;
+}
+
+#note li > p {
+    display: contents;
+}
+
+#note li {
+    width: fit-content;
+    margin-left: 20px;
+    font: 100% arial, sans-serif;
+}
+
+#note ol {
+    margin-left: 0px;
+    list-style: decimal;
+    list-style-position: inside;
+}
+
+#note code:hover {
+    background-color: #add8e8;
+    transition: background-color 500ms linear;
+    cursor: pointer;
+}
+
+#note h1 {
+    margin-top: 10px;
+    margin-left: 10px;
+    font: 200% arial, sans-serif;
+    color: #11387d;
+}
+
+#note h2 {
+    margin-top: 10px;
+    margin-left: 15px;
+    font: arial, sans-serif;
+    color: #11387d;;
+}
+
+#note pre {
     margin-left: 20px;
 }
 
-#note > code {
-    font: 100%;
+#note code {
+    font-size: large;
+}
+
+#note img {
+    max-width: 50%;
+    max-height: 50%;
+    margin: 10px;
+}
+
+#note table, th, td {
+    padding: 10px;
+    border: 3px solid #11387d;
+    border-collapse: collapse;
 }

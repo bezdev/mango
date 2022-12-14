@@ -41,7 +41,7 @@ class Timer {
 }
 
 class Branch {
-    set(x, y, angle, length, depth, isActive) {
+    set(x, y, angle, length, depth, isActive, isNeedle) {
         this.x = x;
         this.y = y;
         this.angle = angle;
@@ -49,7 +49,7 @@ class Branch {
         this.lengthLeft = this.length;
         this.depth = depth;
         this.isActive = isActive;
-        this.isNeedle = false;
+        this.isNeedle = isNeedle;
         this.width = 0;
         this.color = "";
     }
@@ -118,25 +118,12 @@ class Banner {
         else return "f9f9f9";//"#98efef";// "#8686c4";
     }
 
-    addBranch(x, y, angle, length, depth, isActive) {
+    addBranch(x, y, angle, length, depth, isActive, isNeedle) {
         if (this.openBranches.length === 0) return 0;
 
         let i = this.openBranches.pop();
 
-        if (depth === 0) {
-            // let childrenCount = Math.floor(GetRandomBetween(8, 15));
-            // this.branchPool[i].children = new Array(childrenCount);
-
-            // for (let j = 0; j < childrenCount; j++) {
-            //     this.branchPool[i].children[j] = GetRandomBetween(50, length);
-            // }
-
-            // this.branchPool[i].children.sort(function(a, b) {
-            //     return b - a;
-            // });
-        }
-
-        this.branchPool[i].set(x, y, angle, length, depth, isActive, false);
+        this.branchPool[i].set(x, y, angle, length, depth, isActive, isNeedle);
 
         return i;
     }
@@ -222,12 +209,10 @@ class Banner {
 
                 let growSpeed = 0;
                 if (branch.isNeedle) {
-                    growSpeed = this.growSpeed * 50; //.03;
+                    growSpeed = 300;
                 } else {
-                    growSpeed = this.growSpeed;
+                    growSpeed = 100;
                 }
-                //growSpeed = branch.finalBranch === true ? 300 : growSpeed;
-                if (growSpeed > 500) growSpeed = 500;
 
                 let growLength = delta / 1000 * growSpeed;
                 let finalGrow = !!(branch.lengthLeft <= growLength);
@@ -236,7 +221,7 @@ class Banner {
                 let totalGrown = branch.length - branch.lengthLeft;
 
                 let endPoint = branch.getEndPoint(growLength);
-                if (branch.isNeedle || branch.depth < 3) this.drawLine(branch.x, branch.y, endPoint.x, endPoint.y);
+                this.drawLine(branch.x, branch.y, endPoint.x, endPoint.y);
 
                 branch.x = endPoint.x;
                 branch.y = endPoint.y;
@@ -262,7 +247,7 @@ class Banner {
                     }
 
                     let p = branch.getEndPoint(-(totalGrown - childBranch));
-                    let ci = this.addBranch(p.x, p.y, angle, length, depth, false);
+                    let ci = this.addBranch(p.x, p.y, angle, length, depth, false, false);
                     this.addBranchType(ci, 1, branch.color);
                     if (childrenCount > 0) {
                         this.branchPool[ci].children = new Array(childrenCount);
@@ -286,12 +271,14 @@ class Banner {
                         else if (branch.depth === 1) needleCount = 50;
                         else if (branch.depth === 2) needleCount = 15;
                         else needleCount = 10;
+
+                        let minHeight = GetRandomBetween(20, 30);
                         for (let j = 0; j < needleCount; j++) {
                             let p = branch.getEndPoint(-GetRandomBetween(0, branch.length));
-                            if (p.y < 30) continue;
+                            if (p.y < minHeight) continue;
                             let angle = -10;
                             if (Math.random() < 0.5) angle = 190;
-                            let ci = this.addBranch(p.x, p.y, angle, Math.pow(1 - p.y / this.maxHeight, 2) * GetRandomBetween(40, 80), 100, true);
+                            let ci = this.addBranch(p.x, p.y, angle, Math.pow(1 - p.y / this.maxHeight, 2) * GetRandomBetween(40, 80), 100, true, true);
                             this.branchPool[ci].isNeedle = true;
                             this.addBranchType(ci, 1, branch.color);
                             this.branchPool[ci].finalBranch = branch.finalBranch;
@@ -321,7 +308,7 @@ class Banner {
         let banner = Banner.getInstance();
         if (banner.stopTrees) return;
         let treesLeft = banner.maxTrees - banner.treesDrawn;
-        let treesToDraw = 5;
+        let treesToDraw = 6;
         treesToDraw = treesToDraw > treesLeft ? treesLeft : treesToDraw;
         let color = "#f9f9f9";
 
@@ -366,7 +353,7 @@ class Banner {
             //     banner.frames = 0;
             // });
             banner.drawTreeThread();
-            banner.timer.createRecurringTimer(250, function() { banner.drawTreeThread(); });
+            banner.timer.createRecurringTimer(100, function() { banner.drawTreeThread(); });
         } else {
             banner.frames++;
             banner.timer.updateTime(currentTime);

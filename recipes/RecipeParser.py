@@ -33,7 +33,7 @@ def parse(url):
     directionsList = []
     for div in tree.iter('div'):
         if ('class' in div.attrib):
-            if ('direction' in div.attrib['class'] or 'instruction' in div.attrib['class']):
+            if ('direction' in div.attrib['class'] or 'instruction' in div.attrib['class'] or 'steps' in div.attrib['class']):
                 text = "".join(div.itertext())
                 directions = re.split('[\n]{2,}', text)
                 for direction in directions:
@@ -51,8 +51,17 @@ def parse(url):
 
     return { "ingredients": ingredientsList, "directions": directionsList }
 
+def printRecipe(data):
+    #print("Ingredients:")
+    for ingredient in data["ingredients"]:
+        print(ingredient)
+    #print("Directions:")
+    for step in data["directions"]:
+        print(step)
+    
 if __name__ == "__main__":
     #parse('https://feedmephoebe.com/red-lentil-recipe/')
     #p = parse('https://thewoksoflife.com/mongolian-beef-recipe/')
-    p = parse('https://www.inspiredtaste.net/15938/easy-and-smooth-hummus-recipe/')
-    print(p)
+    #p = parse('https://www.inspiredtaste.net/15938/easy-and-smooth-hummus-recipe/')
+    p = parse('https://www.allrecipes.com/recipe/35151/traditional-filipino-lumpia/')
+    printRecipe(p)
