@@ -63,5 +63,6 @@ if __name__ == "__main__":
     #parse('https://feedmephoebe.com/red-lentil-recipe/')
     #p = parse('https://thewoksoflife.com/mongolian-beef-recipe/')
     #p = parse('https://www.inspiredtaste.net/15938/easy-and-smooth-hummus-recipe/')
-    p = parse('https://www.allrecipes.com/recipe/35151/traditional-filipino-lumpia/')
+    #p = parse('https://www.allrecipes.com/recipe/35151/traditional-filipino-lumpia/')
+    p = parse('https://www.dimitrasdishes.com/greek-roast-leg-of-lamb/')
     printRecipe(p)

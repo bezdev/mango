@@ -65,26 +65,3 @@ class BodybuildingCase(TestCase):
         AddCardioTraining(timezone.now() + datetime.timedelta(days=5), 'Run', datetime.timedelta(minutes=10), 2.9)
         AddCardioTraining(timezone.now() + datetime.timedelta(days=6), 'Run', datetime.timedelta(minutes=10), 3.0)
         AddCardioTraining(timezone.now() + datetime.timedelta(days=7), 'Run', datetime.timedelta(minutes=10), 3.4)
-
-    def test_animals_can_speak(self):
-
-        """Animals that can speak are correctly identified"""
-        lion = Animal.objects.get(name="lion")
-        cat = Animal.objects.get(name="cat")
-        self.assertEqual(lion.speak(), 'The lion says "roar"')
-        self.assertEqual(cat.speak(), 'The cat says "meow"')
-
-from django.test import TestCase
-from myapp.models import Animal
-
-class AnimalTestCase(TestCase):
-    def setUp(self):
-        Animal.objects.create(name="lion", sound="roar")
-        Animal.objects.create(name="cat", sound="meow")
-
-    def test_animals_can_speak(self):
-        """Animals that can speak are correctly identified"""
-        lion = Animal.objects.get(name="lion")
-        cat = Animal.objects.get(name="cat")
-        self.assertEqual(lion.speak(), 'The lion says "roar"')
-        self.assertEqual(cat.speak(), 'The cat says "meow"')
