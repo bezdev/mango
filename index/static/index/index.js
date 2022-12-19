@@ -61,7 +61,7 @@ function getContentTag(url) {
     return url.replace(/[/?=]/g, "") + "-content";
 }
 
-function loadDom(dom, url, isInitialLoad) {
+function loadPage(dom, url, isInitialLoad) {
     if (!dom.getElementById("content")) throw 'page not found';
 
     let contentId = getContentTag(url);
@@ -69,6 +69,7 @@ function loadDom(dom, url, isInitialLoad) {
     if (!isPageLoaded(url)) {
         loadedPages.push(url);
         let innerHTML = dom.getElementById("content").innerHTML;
+
         if (isInitialLoad) {
             dom.getElementById("content").innerHTML = "";
         }
@@ -77,6 +78,30 @@ function loadDom(dom, url, isInitialLoad) {
         contentDiv.id = contentId;
         contentDiv.innerHTML = innerHTML;
         document.querySelector('#content').appendChild(contentDiv);
+
+        // Run on-load scripts
+        if (dom.scripts) {
+            for (let i = 0; i < dom.scripts.length; i++) {
+                let script = dom.scripts[i];
+                if (!script.hasAttribute('bez-on-load')) continue;
+
+                let scriptEl = document.createElement("script");
+                Array.from(script.attributes).forEach(attr => {
+                    scriptEl.setAttribute(attr.name, attr.value) 
+                });
+
+                let scriptCode = script.innerHTML;
+                try {
+                    scriptEl.appendChild(document.createTextNode(scriptCode));
+                    document.head.appendChild(scriptEl);
+                } catch (e) {
+                    scriptEl.text = scriptCode;
+                    document.head.appendChild(scriptEl);
+                }
+
+                break;
+            }
+        }
     } else {
         contentDiv = document.getElementById(contentId);
     }
@@ -122,7 +147,7 @@ function loadUrl(url) {
         .then(response => response.text())
         .then(text => {
             let dom = new DOMParser().parseFromString(text, 'text/html');
-            loadDom(dom, url, false);
+            loadPage(dom, url, false);
             history.replaceState(null, null, window.location.origin + url);
         });
 }
@@ -246,7 +271,7 @@ $(document).ready(function() {
         }
     });
 
-    loadDom(document, window.location.pathname, true);
+    loadPage(document, window.location.pathname, true);
 
     Banner.getInstance().draw();
 });

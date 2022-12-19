@@ -15,7 +15,8 @@ def recipe(request, name_slug):
     
     data = {}
     data["name"] = recipe.name
-    data["ingredients"] = recipe.decompose()
+    data["name_slug"] = recipe.name_slug
+    data["ingredients"] = recipe.decompose_ingredients()
     data["directions"] = recipe.direction_text.replace("\r\n", "\n").split("\n")
 
     return render(request, 'recipes/recipe.html', { "recipe" : data })

@@ -42,13 +42,13 @@ class Recipe(models.Model):
     ingredient_text = models.TextField(max_length = 8192, null = False)
     direction_text = models.TextField(max_length = 8192, null = False)
 
-    def decompose(self):
+    def decompose_ingredients(self):
         ingredients = []
 
         for ingredient in self.ingredient_text.split('\n'):
             quantity_pattern = re.compile('[0-9\u00BC-\u00BE\u2150-\u215E]+')
 
-            food = ""
+            quantity = unit = food = ""
 
             def get_quantity(string):
                 match = quantity_pattern.match(string)
@@ -71,7 +71,7 @@ class Recipe(models.Model):
                 elif u := get_unit(split):
                     unit = u
                 else:
-                    food += ("" if not food else " ") + split
+                    food += ("" if not food else " ") + split.strip()
 
             ingredients.append(Ingredient(quantity, unit, food))
 

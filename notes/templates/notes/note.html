@@ -5,17 +5,16 @@
     <script type="text/javascript" src="{% static 'notes/note.js' %}"></script>
     <link rel="stylesheet" type="text/css" href="{% static 'notes/default.css' %}" />
 
-    <script type="text/javascript">
-        function Initialize() {
-            $('code').click((event) => {
-                copyToClipboard(event.target.innerText);
-            });
-        }
+    <script bez-on-load type="text/javascript">
+        $('#note-{{ note.name_slug }} code').click((event) => {
+            copyToClipboard(event.target.innerText);
+        });
     </script>
     {% endblock %}
 
     {% block content %}
-        <div id="note">
+        <div id="note-{{ note.name_slug }}" class="note">
+            <h1><b>{{ note.name }}</b></h1>
             {{ note.text | markdown | safe }}
         </div>
     {% endblock %}

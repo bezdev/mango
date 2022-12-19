@@ -36,7 +36,3 @@ function createNote(lines) {
         }
     });
 }
-
-$(document).ready(function() {
-    Initialize();
-});
