@@ -19,7 +19,6 @@ function copyToClipboard(text) {
     try {
         document.execCommand('copy');
     } catch (err) {
-        console.error('copy failed');
     }
 
     document.body.removeChild(textArea);

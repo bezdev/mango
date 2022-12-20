@@ -1,83 +1,15 @@
 {% extends "index/index.html" %}
     {% block head %}
-    {% load static %}
+    {% load static %}\
+    <script type="text/javascript" src="{% static 'recipes/recipe.js' %}"></script>
     <link rel="stylesheet" type="text/css" href="{% static 'recipes/default.css' %}" />
 
     <script bez-on-load type="text/javascript">
-    {
-        let INGREDIENTS = [
+        decorateRecipe("recipe-{{ recipe.name_slug }}", [
             {% for ingredient in recipe.ingredients %}
                 '{{ ingredient.food }}'.toLowerCase(),
             {% endfor %}
-        ];
-
-        const IGNORED_WORDS = new Set([
-            'the',
-            'in',
-            'or',
-            'a',
-            'for',
         ]);
-
-        let containsIngredient = (ingredient) => {
-            ingredient = ingredient.toLowerCase();
-            if (IGNORED_WORDS.has(ingredient)) return false;
-
-            for (let i = 0; i < INGREDIENTS.length; i++) {
-                if (INGREDIENTS[i].indexOf(ingredient) >= 0) return true;
-            }
-
-            return false;
-        };
-
-        let spanify = (ingredient) => `<span class="step-ingredient-span">${ingredient}</span>`;
-
-        $('#recipe-{{ recipe.name_slug }} .step-p').each(function(i, element) {
-            let words = element.innerHTML.split(" ");
-
-            let decoratedHTML = "";
-            let currentMatch = "";
-            for (let i = 0; i < words.length; i++) {
-                const word = words[i];
-
-                if (word === '') continue;
-
-                let regex = new RegExp("([a-zA-Z]+)(.*)", "g");
-                let match = regex.exec(word);
-                let isLastMatch = match && word !== match[1];
-
-                if (!match) {
-                    if (currentMatch) {
-                        decoratedHTML += (decoratedHTML === "" ? "" : " ") + spanify(currentMatch) + " " + word;
-                        currentMatch = "";
-                    } else {
-                        decoratedHTML += (decoratedHTML === "" ? "" : " ") + word;
-                    }
-                } else if (!currentMatch && containsIngredient(match[1])) {
-                    if (isLastMatch) {
-                        decoratedHTML += (decoratedHTML === "" ? "" : " ") + spanify(match[1]) + match[2];
-                    } else {
-                        currentMatch = word;
-                    }
-                } else if (currentMatch && containsIngredient(currentMatch + " " + match[1])) {
-                    if (isLastMatch) {
-                        decoratedHTML += (decoratedHTML === "" ? "" : " ") + spanify(currentMatch + " " + match[1]) + match[2];
-                        currentMatch = "";
-                    } else {
-                        currentMatch += " " + word;
-                    }
-                } else if (currentMatch) {
-                    let span = spanify(currentMatch);
-                    decoratedHTML += (decoratedHTML === "" ? "" : " ") + span + " " + word;
-                    currentMatch = "";
-                } else {
-                    decoratedHTML += (decoratedHTML === "" ? "" : " ") + word;
-                }
-            }
-
-            element.innerHTML = decoratedHTML;
-        });
-    }
     </script>
     {% endblock %}
 

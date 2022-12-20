@@ -18,8 +18,8 @@ UNITS = {
     'mg',
     'g',
     'kg',
-    'pound',
-    'ounce',
+    'lb', 'pound',
+    'oz', 'ounce',
 }
 
 class Ingredient:
@@ -46,7 +46,7 @@ class Recipe(models.Model):
         ingredients = []
 
         for ingredient in self.ingredient_text.split('\n'):
-            quantity_pattern = re.compile('[0-9\u00BC-\u00BE\u2150-\u215E]+')
+            quantity_pattern = re.compile('[0-9\u00BC-\u00BE\u2150-\u215E-.]+')
 
             quantity = unit = food = ""
 
