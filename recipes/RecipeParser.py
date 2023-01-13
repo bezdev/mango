@@ -3,17 +3,18 @@ import json
 import requests
 import re
 import validators
+import sys
 
 from pprint import pprint
 
-def parse(url):
+def parse_url(url):
     if not validators.url(url):
         return { "error": "invalid url" }
 
     content = requests.get(url).content
     tree = html.fromstring(content)
 
-    ingredientsList = []
+    ingredient_list = []
     for div in tree.iter('div'):
         if ('class' in div.attrib):
             if ('ingredient' in div.attrib['class']):
@@ -25,12 +26,12 @@ def parse(url):
                     if (ingredient == ''):
                         continue
 
-                    if (ingredient not in ingredientsList):
-                        ingredientsList.append(ingredient)
+                    if (ingredient not in ingredient_list):
+                        ingredient_list.append(ingredient)
 
                 #print('text: {}'.format(text))
 
-    directionsList = []
+    direction_list = []
     for div in tree.iter('div'):
         if ('class' in div.attrib):
             if ('direction' in div.attrib['class'] or 'instruction' in div.attrib['class'] or 'steps' in div.attrib['class']):
@@ -41,17 +42,16 @@ def parse(url):
                     if (direction == ''):
                         continue
 
-                    if (direction not in directionsList):
-                        directionsList.append(direction)
+                    if (direction not in direction_list):
+                        direction_list.append(direction)
 
-                #print('text: {}'.format(text))
+    # sanitize ingredients
+    if len(ingredient_list) == 1:
+        print('ONLY ONE')
 
-    # print(ingredientsList)
-    # print(directionsList)
+    return { "ingredients": ingredient_list, "directions": direction_list }
 
-    return { "ingredients": ingredientsList, "directions": directionsList }
-
-def printRecipe(data):
+def print_recipe(data):
     #print("Ingredients:")
     for ingredient in data["ingredients"]:
         print(ingredient)
@@ -60,9 +60,9 @@ def printRecipe(data):
         print(step)
     
 if __name__ == "__main__":
-    #parse('https://feedmephoebe.com/red-lentil-recipe/')
-    #p = parse('https://thewoksoflife.com/mongolian-beef-recipe/')
-    #p = parse('https://www.inspiredtaste.net/15938/easy-and-smooth-hummus-recipe/')
-    #p = parse('https://www.allrecipes.com/recipe/35151/traditional-filipino-lumpia/')
-    p = parse('https://www.dimitrasdishes.com/greek-roast-leg-of-lamb/')
-    printRecipe(p)
+    #parse_url('https://feedmephoebe.com/red-lentil-recipe/')
+    #p = parse_url('https://thewoksoflife.com/mongolian-beef-recipe/')
+    #p = parse_url('https://www.inspiredtaste.net/15938/easy-and-smooth-hummus-recipe/')
+    #p = parse_url('https://www.allrecipes.com/recipe/35151/traditional-filipino-lumpia/')
+    #p = parse_url('https://www.dimitrasdishes.com/greek-roast-leg-of-lamb/')
+    print_recipe(parse_url(sys.argv[1]))
