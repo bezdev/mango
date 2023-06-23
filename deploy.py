@@ -103,7 +103,8 @@ if (args.deploy):
     cmds = [
         'cd ' + SERVER_DIRECTORY,
         'source .venv/bin/activate',
-        'python manage.py migrate'
+        'python manage.py migrate',
+        'sh deploy.sh'
     ]
     for cmd in cmds:
         sshProc.stdin.write(str(cmd + '\n').encode('utf-8'))
