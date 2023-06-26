@@ -14,7 +14,7 @@ class Note(models.Model):
     text = models.TextField(max_length = 8192, null = False)
 
     def __str__(self):
-        return f'{str(self.create_date)},{self.name},{self.name_slug},{self.text}'
+        return str(self.name)
 
 class Tag(models.Model):
     """

@@ -2,19 +2,23 @@
     {% block head %}
     {% load static %}
     {% load markdown %}
+    {% load tags %}
     <script type="text/javascript" src="{% static 'notes/note.js' %}"></script>
     <link rel="stylesheet" type="text/css" href="{% static 'notes/default.css' %}" />
 
-    <script bez-on-load type="text/javascript">
+    <script bez-on-load>
         $('#note-{{ note.name_slug }} code').click((event) => {
             copyToClipboard(event.target.innerText);
         });
+
+        Note.createTOC('note-{{ note.name_slug }}');
     </script>
     {% endblock %}
 
     {% block content %}
         <div id="note-{{ note.name_slug }}" class="note">
             <h1><b>{{ note.name }}</b></h1>
+            <div class="toc"></div>
             {{ note.text | markdown | safe }}
         </div>
     {% endblock %}

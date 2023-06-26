@@ -79,6 +79,7 @@ function loadPage(dom, url, isInitialLoad) {
         document.querySelector('#content').appendChild(contentDiv);
 
         // Run on-load scripts
+        let scripts = [];
         if (dom.scripts) {
             for (let i = 0; i < dom.scripts.length; i++) {
                 let script = dom.scripts[i];
@@ -92,13 +93,14 @@ function loadPage(dom, url, isInitialLoad) {
                 let scriptCode = script.innerHTML;
                 try {
                     scriptEl.appendChild(document.createTextNode(scriptCode));
-                    document.head.appendChild(scriptEl);
                 } catch (e) {
                     scriptEl.text = scriptCode;
-                    document.head.appendChild(scriptEl);
                 }
+                scripts.push(scriptEl);
+            }
 
-                break;
+            for (let i = 0; i < scripts.length; i++) {
+                document.head.appendChild(scripts[i]);
             }
         }
     } else {
@@ -151,6 +153,28 @@ function loadUrl(url) {
         });
 }
 
+function loadSVGs(svgs) {
+    svgs.forEach(function(v) {
+        fetch(v[0])
+            .then(response => response.text())
+            .then(svgData => {
+                let el = Components.DIV();
+                el.innerHTML = svgData;
+                el.querySelectorAll("path").forEach(function(path) {
+                    path.style.stroke = "";
+                    path.setAttribute("class", "icon-svg");
+                });
+                el.querySelectorAll("circle").forEach(function(path) {
+                    path.style.stroke = "";
+                    path.setAttribute("class", "icon-svg");
+                });
+
+                let svg_el = document.getElementById(v[1]);
+                svg_el.innerHTML = el.outerHTML;
+            })
+            .catch(error => console.log("svg load error: " + error));
+    });
+}
 let isSearchExecuted = false;
 let isSearchQueued = false;
 let searchQuery;
@@ -270,7 +294,26 @@ $(document).ready(function() {
         }
     });
 
-    loadPage(document, window.location.pathname, true);
-
     Banner.getInstance().draw();
+
+    let navbar = document.getElementById("navbar");
+    let header = document.getElementById("header");
+    let body = document.getElementById("body");
+    const headerHeight = header.offsetHeight;
+    body.addEventListener('scroll', function(e) {
+        let newHeight = headerHeight - body.scrollTop;
+        header.style.height = newHeight > 0 ? newHeight + "px" : "0";
+        if (newHeight <= 0) {
+            Components.Hide(header);
+        } else {
+            Components.Show(header);
+        }
+    });
+
+    document.getElementById("search-icon").addEventListener('click', function(event) {
+        SmoothScroll(0, 250);
+        setTimeout(() => { document.getElementById("search").focus(); }, 500);
+    });
+
+    loadPage(document, window.location.pathname, true);
 });

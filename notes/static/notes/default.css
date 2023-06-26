@@ -2,12 +2,40 @@
     margin-top: 10px;
     margin-left: 15px;
     font: arial, sans-serif;
-    color: #11387d;;
+    color: #11387d;
 }
 
 #notes a {
     margin-left: 20px;
     font: 200% arial, sans-serif;
+}
+
+.toc {
+    width: auto;
+    margin-top: 10px;
+}
+
+.toc-link:link, .toc-link.visited {
+    color: #11387d;
+    text-decoration: none;
+}
+
+.toc ul {
+    margin-left: 10px;
+    list-style-type: none;
+    font: 100% arial, sans-serif;
+}
+
+.toc ul > li {
+    font-weight: bold;
+}
+
+.toc ul > ul > li, .toc li > ul > li {
+    font-weight: normal;
+}
+
+.note {
+    margin: 0 auto;
 }
 
 .note p {
@@ -20,7 +48,7 @@
     display: contents;
 }
 
-.note li {
+.note > li {
     width: fit-content;
     margin-left: 20px;
     font: 100% arial, sans-serif;
@@ -38,14 +66,21 @@
     cursor: pointer;
 }
 
-.note h1 {
+.note > h1 {
     margin-top: 10px;
     margin-left: 10px;
     font: 200% arial, sans-serif;
     color: #11387d;
 }
 
-.note h2 {
+.note > h2 {
+    margin-top: 10px;
+    margin-left: 15px;
+    font: arial, sans-serif;
+    color: #11387d;;
+}
+
+.note > h3 {
     margin-top: 10px;
     margin-left: 15px;
     font: arial, sans-serif;
@@ -58,6 +93,7 @@
 
 .note code {
     font-size: large;
+    white-space:break-spaces;
 }
 
 .note img {
@@ -67,6 +103,7 @@
 }
 
 .note table, .note th, .note td {
+    margin-left: 10px;
     padding: 10px;
     border: 3px solid #11387d;
     border-collapse: collapse;

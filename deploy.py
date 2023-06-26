@@ -69,7 +69,7 @@ if (args.deploy):
     print('deleting files on server ...')
     cmds = [
         'cd ' + SERVER_DIRECTORY,
-        'find . ! -path "./.venv*" ! -path "./files*" -type d -exec rm -f -r {} +',
+        'find . ! -path "./.venv*" ! -path "./files*" ! -path "." ! -path ".." -type d -exec rm -f -r {} +',
         'echo "delete completed."'
     ]
     for cmd in cmds:
@@ -100,6 +100,7 @@ if (args.deploy):
 
     sshProc = subprocess.Popen(["ssh", SERVER_USER], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     print('running migrations ...')
+    print('restarting services ...')
     cmds = [
         'cd ' + SERVER_DIRECTORY,
         'source .venv/bin/activate',

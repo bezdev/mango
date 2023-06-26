@@ -57,7 +57,7 @@ class Recipe(models.Model):
 
             def get_unit(string):
                 string = string.lower()
-                if string[-1] is 's':
+                if string[-1] == 's':
                     string = string[:-1]
                 if string in UNITS:
                     return string
