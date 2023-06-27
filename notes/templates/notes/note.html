@@ -3,16 +3,20 @@
     {% load static %}
     {% load markdown %}
     {% load tags %}
-    <script type="text/javascript" src="{% static 'notes/note.js' %}"></script>
-    <link rel="stylesheet" type="text/css" href="{% static 'notes/default.css' %}" />
+        <script type="text/javascript" src="{% static 'notes/note.js' %}"></script>
+        <link rel="stylesheet" type="text/css" href="{% static 'notes/default.css' %}" />
 
-    <script bez-on-load>
-        $('#note-{{ note.name_slug }} code').click((event) => {
-            copyToClipboard(event.target.innerText);
-        });
+        {% onload %}
+            $('#note-{{ note.name_slug }} code').click((event) => {
+                copyToClipboard(event.target.innerText);
+            });
 
-        Note.createTOC('note-{{ note.name_slug }}');
-    </script>
+            Note.createTOC('note-{{ note.name_slug }}');
+
+            {% if user.is_authenticated %}
+            currentNavBarButtons[window.location.pathname] = [ NavBarButton("Edit", window.location.origin + "/admin/notes/note/{{note.id}}/change/") ];
+            {% endif %}
+        {% endonload %}
     {% endblock %}
 
     {% block content %}

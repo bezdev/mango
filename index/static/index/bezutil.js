@@ -28,8 +28,20 @@ class Components {
         return child;
     }
 
+    static SCRIPT(attributes) {
+        let el = document.createElement("script");
+        if (attributes) this.SetAttributes(el, attributes);
+        return el;
+    }
+
     static DIV(attributes) {
         let el = document.createElement("div");
+        if (attributes) this.SetAttributes(el, attributes);
+        return el;
+    }
+
+    static SPAN(attributes) {
+        let el = document.createElement("span");
         if (attributes) this.SetAttributes(el, attributes);
         return el;
     }

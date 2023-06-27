@@ -20,7 +20,6 @@ body
 #page
 {
     overflow:hidden;
-    /* margin: 10px auto; */
     border-bottom: none;
     height: 100vh;
 }
@@ -30,7 +29,6 @@ body
     margin: 0 auto;
     padding-bottom: 10px;
     width: 1000px;
-    border-top: 3px solid var(--primary-color);
     border-left: 3px solid var(--primary-color);
     border-right: 3px solid var(--primary-color);
 }
@@ -55,12 +53,11 @@ body
     font-weight: 900;
     color: var(--primary-color);
     display: block;
-
     outline: none;
     box-shadow: 0 4px 6px -5px hsl(0, 0%, 40%), inset 0px 4px 6px -6px hsl(0, 0%, 50%)
 }
 
-#searchResults
+#search-results
 {
     position: absolute;
     background-color: var(--primary-bg-color);
@@ -71,7 +68,7 @@ body
     padding: 10px;
     padding-left: 20px;
     padding-right: 20px;
-    z-index: 1;
+    z-index: 100;
     margin-top: -20px;
     margin-left: 28px;
     width: 900px;
@@ -79,7 +76,7 @@ body
     visibility: hidden;
 }
 
-#searchResults span
+#search-results span
 {
     display: block;
     border-radius: 10px;
@@ -91,6 +88,7 @@ body
 
 #navbar
 {
+    display: flex;
     background-color: var(--primary-bg-color);
     position: sticky;
     top: 0;
@@ -103,11 +101,52 @@ body
     border-right: 3px solid var(--primary-color);
 }
 
-#navbar svg
+#navbar > div
+{
+    cursor: pointer;
+    display: flex;
+    height: 50px;
+    border-right: 3px solid var(--primary-color);
+    align-items: center;
+}
+
+#navbar > div:first-child {
+    padding-right: 10px;
+}
+
+#navbar > div:last-child {
+    border-left: 3px solid var(--primary-color);
+    border-right: none;
+    margin-left: auto;
+    order: -1;
+}
+
+#navbar > div:hover {
+    background-color: #99E4C4;
+}
+
+#navbar > div span {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+#navbar #login-button {
+    order: 1;
+}
+
+.icon svg
 {
     margin: 10px;
     height: 30px;
     width: 30px;
+}
+
+.icon-label
+{
+    margin: 10px;
+    font: 150% arial, sans-serif;
+    color: var(--primary-color);
+    font-weight: bold;
 }
 
 #body
@@ -126,11 +165,10 @@ body
 #content
 {
     margin: 0 auto;
-    /* overflow-y: scroll; */
-    text-align: left;
-    background-color: var(--primary-bg-color);
     height: auto;
     width: 1000px;
+    background-color: var(--primary-bg-color);
+    text-align: left;
 }
 
 #footer
@@ -149,10 +187,10 @@ body
 
 .navbar-sticky
 {
-    /* display: flex; */
     position: fixed;
     top: 0;
     padding-bottom: 3px;
+    border-right: 3px solid var(--primary-color);
 }
 
 .icon-svg

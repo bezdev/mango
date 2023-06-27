@@ -1,5 +1,11 @@
+let HEADER_DIV;
+let SEARCH_RESULTS_DIV;
+let BODY_DIV;
+let NAVBAR_DIV;
+
 let loadedAssets = [];
 let loadedPages = [];
+let currentNavBarButtons = {};
 let currentContentDiv;
 
 function copyToClipboard(text) {
@@ -63,10 +69,10 @@ function getContentTag(url) {
 function loadPage(dom, url, isInitialLoad) {
     if (!dom.getElementById("content")) throw 'page not found';
 
+    history.replaceState(null, null, window.location.origin + url);
     let contentId = getContentTag(url);
 
     if (!isPageLoaded(url)) {
-        loadedPages.push(url);
         let innerHTML = dom.getElementById("content").innerHTML;
 
         if (isInitialLoad) {
@@ -77,32 +83,6 @@ function loadPage(dom, url, isInitialLoad) {
         contentDiv.id = contentId;
         contentDiv.innerHTML = innerHTML;
         document.querySelector('#content').appendChild(contentDiv);
-
-        // Run on-load scripts
-        let scripts = [];
-        if (dom.scripts) {
-            for (let i = 0; i < dom.scripts.length; i++) {
-                let script = dom.scripts[i];
-                if (!script.hasAttribute('bez-on-load')) continue;
-
-                let scriptEl = document.createElement("script");
-                Array.from(script.attributes).forEach(attr => {
-                    scriptEl.setAttribute(attr.name, attr.value) 
-                });
-
-                let scriptCode = script.innerHTML;
-                try {
-                    scriptEl.appendChild(document.createTextNode(scriptCode));
-                } catch (e) {
-                    scriptEl.text = scriptCode;
-                }
-                scripts.push(scriptEl);
-            }
-
-            for (let i = 0; i < scripts.length; i++) {
-                document.head.appendChild(scripts[i]);
-            }
-        }
     } else {
         contentDiv = document.getElementById(contentId);
     }
@@ -110,12 +90,29 @@ function loadPage(dom, url, isInitialLoad) {
     let scripts = dom.getElementsByTagName('script');
     for (var i = 0; i < scripts.length; i++) {
         if (scripts[i].hasAttribute('bez-base')) continue;
-        if (scripts[i].src === '') continue;
+        if (scripts[i].src === '' && !scripts[i].hasAttribute('bez-on-load')) continue;
         if (isAssetLoaded(scripts[i].src)) continue;
+        if (isPageLoaded(url)) continue;
 
-        loadedAssets.push(scripts[i].src);
-
-        if (!isInitialLoad) $.getScript(scripts[i].src);
+        if (scripts[i].hasAttribute('bez-on-load')) {
+            let scriptEl = Components.SCRIPT();
+            let scriptCode = scripts[i].innerHTML;
+            try {
+                scriptEl.appendChild(document.createTextNode(scriptCode));
+            } catch (e) {
+                scriptEl.text = scriptCode;
+            }
+            document.head.appendChild(scriptEl);
+        } else {
+            loadedAssets.push(scripts[i].src);
+            if (!isInitialLoad) {
+                $.ajax({
+                    async: false,
+                    url: scripts[i].src,
+                    dataType: "script"
+                });
+            }
+        }
     }
 
     let css = dom.getElementsByTagName("link");
@@ -139,8 +136,18 @@ function loadPage(dom, url, isInitialLoad) {
         currentContentDiv.style.display = "none";
     }
 
+    for (let i = NAVBAR_DIV.children.length - 2; i > 0; i--) {
+        NAVBAR_DIV.removeChild(NAVBAR_DIV.children[i]);
+    }
+    if (url in currentNavBarButtons) {
+        currentNavBarButtons[url].forEach(function(v) {
+            NAVBAR_DIV.insertBefore(v, NAVBAR_DIV.lastElementChild);
+        });
+    }
+
     currentContentDiv = contentDiv;
     currentContentDiv.style.display = "block";
+    loadedPages.push(url);
 }
 
 function loadUrl(url) {
@@ -149,7 +156,6 @@ function loadUrl(url) {
         .then(text => {
             let dom = new DOMParser().parseFromString(text, 'text/html');
             loadPage(dom, url, false);
-            history.replaceState(null, null, window.location.origin + url);
         });
 }
 
@@ -168,9 +174,7 @@ function loadSVGs(svgs) {
                     path.style.stroke = "";
                     path.setAttribute("class", "icon-svg");
                 });
-
-                let svg_el = document.getElementById(v[1]);
-                svg_el.innerHTML = el.outerHTML;
+                v[1]().appendChild(el);
             })
             .catch(error => console.log("svg load error: " + error));
     });
@@ -179,7 +183,6 @@ let isSearchExecuted = false;
 let isSearchQueued = false;
 let searchQuery;
 let searchResults;
-let searchResultsDiv;
 let selectedSearchResultIndex = 0;
 
 function executeSearch() {
@@ -192,8 +195,8 @@ function executeSearch() {
 }
 
 function clearSearchResults() {
-    searchResultsDiv.innerHTML = "";
-    searchResultsDiv.style.visibility = "hidden";
+    SEARCH_RESULTS_DIV.innerHTML = "";
+    SEARCH_RESULTS_DIV.style.visibility = "hidden";
     searchResults = [];
 }
 
@@ -202,9 +205,9 @@ function selectSearchResult(index) {
     if (index < 0) index = searchResults.length - 1;
     if (index >= searchResults.length) index = 0;
 
-    searchResultsDiv.children[selectedSearchResultIndex].style.backgroundColor = "#f9f9f9"
+    SEARCH_RESULTS_DIV.children[selectedSearchResultIndex].style.backgroundColor = "#f9f9f9"
     selectedSearchResultIndex = index;
-    searchResultsDiv.children[selectedSearchResultIndex].style.backgroundColor = "#dadadd"
+    SEARCH_RESULTS_DIV.children[selectedSearchResultIndex].style.backgroundColor = "#dadadd"
 }
 
 function loadSearchResults(results) {
@@ -228,13 +231,13 @@ function loadSearchResults(results) {
     });
 
     searchResults = results;
-    searchResultsDiv.style.visibility = "visible";
-    searchResultsDiv.innerHTML = "";
+    SEARCH_RESULTS_DIV.style.visibility = "visible";
+    SEARCH_RESULTS_DIV.innerHTML = "";
 
     for (let i = 0; i < searchResults.length; i++) {
         let spanDiv = document.createElement("span");
         spanDiv.innerText = searchResults[i].text;
-        searchResultsDiv.appendChild(spanDiv);
+        SEARCH_RESULTS_DIV.appendChild(spanDiv);
         if (i === 0) selectSearchResult(0);
     }
 
@@ -243,8 +246,22 @@ function loadSearchResults(results) {
     }
 }
 
+function NavBarButton(label, link) {
+    let div = Components.DIV();
+    let span = Components.SPAN({ "class": "icon-label" });
+    span.innerText = label;
+    div.addEventListener('click', () => {
+        window.open(link, '_blank');
+    });
+
+    return Components.AddChild(div, span);
+}
+
 $(document).ready(function() {
-    searchResultsDiv = document.getElementById("searchResults");
+    HEADER_DIV = document.getElementById("header");
+    SEARCH_RESULTS_DIV = document.getElementById("search-results");
+    BODY_DIV = document.getElementById("body");
+    NAVBAR_DIV = document.getElementById("navbar");
 
     $(document).on("click", "a", function(e) {
         if (!this.rel.startsWith("/")) return true;
@@ -296,21 +313,20 @@ $(document).ready(function() {
 
     Banner.getInstance().draw();
 
-    let navbar = document.getElementById("navbar");
-    let header = document.getElementById("header");
-    let body = document.getElementById("body");
-    const headerHeight = header.offsetHeight;
-    body.addEventListener('scroll', function(e) {
-        let newHeight = headerHeight - body.scrollTop;
-        header.style.height = newHeight > 0 ? newHeight + "px" : "0";
+    const headerHeight = HEADER_DIV.offsetHeight;
+    BODY_DIV.addEventListener('scroll', function(e) {
+        clearSearchResults();
+
+        let newHeight = headerHeight - BODY_DIV.scrollTop;
+        HEADER_DIV.style.height = newHeight > 0 ? newHeight + "px" : "0";
         if (newHeight <= 0) {
-            Components.Hide(header);
+            Components.Hide(HEADER_DIV);
         } else {
-            Components.Show(header);
+            Components.Show(HEADER_DIV);
         }
     });
 
-    document.getElementById("search-icon").addEventListener('click', function(event) {
+    document.getElementById("search-button").addEventListener('click', function(event) {
         SmoothScroll(0, 250);
         setTimeout(() => { document.getElementById("search").focus(); }, 500);
     });
