@@ -2,6 +2,8 @@ let HEADER_DIV;
 let SEARCH_RESULTS_DIV;
 let BODY_DIV;
 let NAVBAR_DIV;
+let LOGIN_DIV;
+let LOGIN_FORM;
 
 let loadedAssets = [];
 let loadedPages = [];
@@ -262,6 +264,8 @@ $(document).ready(function() {
     SEARCH_RESULTS_DIV = document.getElementById("search-results");
     BODY_DIV = document.getElementById("body");
     NAVBAR_DIV = document.getElementById("navbar");
+    LOGIN_DIV = document.getElementById("login");
+    LOGIN_FORM = document.getElementById("login-form");
 
     $(document).on("click", "a", function(e) {
         if (!this.rel.startsWith("/")) return true;
@@ -324,12 +328,49 @@ $(document).ready(function() {
         } else {
             Components.Show(HEADER_DIV);
         }
+        Components.Hide(LOGIN_DIV);
     });
 
     document.getElementById("search-button").addEventListener('click', function(event) {
         SmoothScroll(0, 250);
         setTimeout(() => { document.getElementById("search").focus(); }, 500);
     });
+
+    let loginButton = document.getElementById("login-button");
+    if (loginButton) {
+        loginButton.addEventListener('click', function(event) {
+            let rect = loginButton.getBoundingClientRect();
+            Components.Show(LOGIN_DIV);
+            LOGIN_DIV.style.left = (rect.right - LOGIN_DIV.offsetWidth + 3) + "px";
+            LOGIN_DIV.style.top = rect.bottom + "px";
+            LOGIN_DIV.children[0].children[0].focus();
+        });
+        LOGIN_FORM.addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            const username = LOGIN_FORM.children[0].value;
+            const password = LOGIN_FORM.children[1].value;
+
+            fetch("/api/v1/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "X-CSRFToken": csrftoken },
+                body: JSON.stringify({ "username": username, "password": password })
+            })
+            .then(response => {
+                window.location.reload();
+            })
+            .catch(error => {
+                window.location.reload();
+            });
+        });
+
+        document.addEventListener('click', function(event) {
+            var target = event.target;
+            if (!loginButton.contains(target) && !LOGIN_DIV.contains(target)) {
+                Components.Hide(LOGIN_DIV);
+            }
+        });
+    }
 
     loadPage(document, window.location.pathname, true);
 });

@@ -28,7 +28,18 @@
             </div>
             <div id="navbar">
                 <div id="search-button"><span class="icon"></span><span class="icon-label">Search</span></div>
+                {% if user.is_authenticated %}
+                <div id="account-button"><span class="icon-label">{{ user.username }}</span></div>
+                {% else %}
                 <div id="login-button"><span class="icon-label">Login</span></div>
+                {% endif %}
+            </div>
+            <div id="login">
+                <form id="login-form">
+                    <input type="text" placeholder="user">
+                    <input type="password" placeholder="password">
+                    <input type="submit" value="Login">
+                </form>
             </div>
             <div id="body">
                 <div id="content">

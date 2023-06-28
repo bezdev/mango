@@ -18,6 +18,17 @@ ALLOWED_HOSTS = ['127.0.0.1']
 LOGGING = {
     'version': 1,                       # the dictConfig format version
     'disable_existing_loggers': False,  # retain the default loggers
+    'handlers': {
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': 'mango.log',
+        },
+    },
+    'root': {
+        'handlers': ['file'],
+        'level': 'INFO',
+    },
 }
 
 INSTALLED_APPS = (
@@ -28,6 +39,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.postgres',
     'django.contrib.staticfiles',
+    'rest_framework',
     'index',
     'life',
     'notes',
@@ -35,6 +47,15 @@ INSTALLED_APPS = (
     'bodybuilding',
     'recipes'
 )
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+    ],
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -66,6 +87,9 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'mango.wsgi.application'
 
+if not DEBUG:
+    CSRF_COOKIE_SECURE = True
+    CSRF_COOKIE_DOMAIN = ".bezdev.com"
 
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases

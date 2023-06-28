@@ -17,6 +17,20 @@ body
     background-color: var(--primary-bg-color);
 }
 
+input
+{
+    background: #f9f9f9;
+    border-radius: 10px;
+    border: 2px solid var(--primary-color);
+    padding: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+    color: var(--primary-color);
+    display: block;
+    outline: none;
+    box-shadow: 0 4px 6px -5px hsl(0, 0%, 40%), inset 0px 4px 6px -6px hsl(0, 0%, 50%)
+}
+
 #page
 {
     overflow:hidden;
@@ -40,21 +54,11 @@ body
 
 #search
 {
-    background: #f9f9f9;
-    border-radius: 10px;
-    border: 2px solid var(--primary-color);
     margin: 10px auto 10px auto;
-    padding: 10px;
-    padding-left: 20px;
-    padding-right: 20px;
     height: 50px;
     width: 900px;
     font: 200% arial, sans-serif;
     font-weight: 900;
-    color: var(--primary-color);
-    display: block;
-    outline: none;
-    box-shadow: 0 4px 6px -5px hsl(0, 0%, 40%), inset 0px 4px 6px -6px hsl(0, 0%, 50%)
 }
 
 #search-results
@@ -130,8 +134,26 @@ body
     vertical-align: middle;
 }
 
-#navbar #login-button {
+#navbar #login-button, #navbar #account-button {
     order: 1;
+}
+
+#login {
+    z-index: 1;
+    display: none;
+    float: right;
+    position: absolute;
+    padding: 20px;
+    border: 3px solid var(--primary-color);
+}
+
+#login input[type="text"], #login input[type="password"] {
+    margin-bottom: 10px;
+}
+
+#login input[type="submit"] {
+    font-weight: bold;
+    float: right;
 }
 
 .icon svg
