@@ -66,8 +66,14 @@ class Branch {
 
 class Banner {
     constructor(id) {
-        this.width = 1000;
-        this.height = 150;
+        var debug = document.getElementById("debug");
+        let canvas = document.getElementById(id);
+        let computedStyle = window.getComputedStyle(canvas);
+        this.height = parseInt(computedStyle.getPropertyValue("height", 10));
+        this.width = parseInt(computedStyle.getPropertyValue("width", 10));
+        canvas.height = this.height;
+        canvas.width = this.width;
+
         this.treeHeightRange = { min: 120, max: 150 };
         this.treeBucketCount = Math.floor(GetRandomBetween(5, 8));
         this.maxTrees = this.treeBucketCount * 19;
@@ -89,11 +95,6 @@ class Banner {
         for (let i = 0; i < this.branchPool.length; i++) {
             this.openBranches.push(i);
         }
-
-        var debug = document.getElementById("debug");
-        let canvas = document.getElementById(id);
-        canvas.width = this.width;
-        canvas.height = this.height;
 
         this.context = canvas.getContext("2d");
         this.isFirstFrame = true;

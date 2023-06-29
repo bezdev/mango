@@ -41,14 +41,16 @@ input
 #header
 {
     margin: 0 auto;
-    padding-bottom: 10px;
     width: 1000px;
+    height: 250px;
     border-left: 3px solid var(--primary-color);
     border-right: 3px solid var(--primary-color);
 }
 
-#header #banner 
+#header #banner
 {
+    width: 1000px;
+    height: 150px;
     background-color: #000000;
 }
 
@@ -114,31 +116,37 @@ input
     align-items: center;
 }
 
-#navbar > div:first-child {
+#navbar > div:first-child
+{
     padding-right: 10px;
 }
 
-#navbar > div:last-child {
+#navbar > div:last-child
+{
     border-left: 3px solid var(--primary-color);
     border-right: none;
     margin-left: auto;
     order: -1;
 }
 
-#navbar > div:hover {
+#navbar > div:hover
+{
     background-color: #99E4C4;
 }
 
-#navbar > div span {
+#navbar > div span
+{
     display: inline-block;
     vertical-align: middle;
 }
 
-#navbar #login-button, #navbar #account-button {
+#navbar #login-button, #navbar #account-button
+{
     order: 1;
 }
 
-#login {
+#login
+{
     z-index: 1;
     display: none;
     float: right;
@@ -147,11 +155,13 @@ input
     border: 3px solid var(--primary-color);
 }
 
-#login input[type="text"], #login input[type="password"] {
+#login input[type="text"], #login input[type="password"]
+{
     margin-bottom: 10px;
 }
 
-#login input[type="submit"] {
+#login input[type="submit"]
+{
     font-weight: bold;
     float: right;
 }
@@ -173,7 +183,7 @@ input
 
 #body
 {
-    height: 100%;
+    height: calc(100vh - 325px);
     overflow: auto;
     position: relative;
     border-top: 3px solid var(--primary-color);
@@ -182,6 +192,24 @@ input
 #body::-webkit-scrollbar
 {
     width: 0px;
+}
+
+#back-to-top
+{
+    opacity: 0;
+    transition: opacity 5s;
+    position: fixed;
+    bottom: 25px;
+    width: 100px;
+    padding: 10px;
+    border: 3px solid var(--primary-color);
+    font: 150% arial, sans-serif;
+    font-weight: bold;
+    color: var(--primary-color);
+    background-color: var(--primary-bg-color);
+    text-align: center;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 #content
@@ -195,6 +223,7 @@ input
 
 #footer
 {
+    height: 17px;
     border-top: 3px solid var(--primary-bg-color);
     background-color: var(--primary-color);
 }

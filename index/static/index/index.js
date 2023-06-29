@@ -4,6 +4,7 @@ let BODY_DIV;
 let NAVBAR_DIV;
 let LOGIN_DIV;
 let LOGIN_FORM;
+let BACK_TO_TOP_DIV;
 
 let loadedAssets = [];
 let loadedPages = [];
@@ -266,6 +267,7 @@ $(document).ready(function() {
     NAVBAR_DIV = document.getElementById("navbar");
     LOGIN_DIV = document.getElementById("login");
     LOGIN_FORM = document.getElementById("login-form");
+    BACK_TO_TOP_DIV = document.getElementById('back-to-top');
 
     $(document).on("click", "a", function(e) {
         if (!this.rel.startsWith("/")) return true;
@@ -318,17 +320,28 @@ $(document).ready(function() {
     Banner.getInstance().draw();
 
     const headerHeight = HEADER_DIV.offsetHeight;
+    let backToTopTimeout;
     BODY_DIV.addEventListener('scroll', function(e) {
         clearSearchResults();
 
         let newHeight = headerHeight - BODY_DIV.scrollTop;
+        if (newHeight < 0) newHeight = 0;
         HEADER_DIV.style.height = newHeight > 0 ? newHeight + "px" : "0";
-        if (newHeight <= 0) {
-            Components.Hide(HEADER_DIV);
-        } else {
+        BODY_DIV.style.height = `calc(100vh - ${(newHeight + 75)}px)`;
+        if (newHeight > 0) {
             Components.Show(HEADER_DIV);
+        } else {
+            Components.Hide(HEADER_DIV);
         }
         Components.Hide(LOGIN_DIV);
+        BACK_TO_TOP_DIV.style.transition = "none";
+        BACK_TO_TOP_DIV.style.opacity = 1;
+
+
+        backToTopTimeout = setTimeout(() => {
+            BACK_TO_TOP_DIV.style.transition = "opacity 5s";
+            BACK_TO_TOP_DIV.style.opacity = 0;
+        }, 2000);
     });
 
     document.getElementById("search-button").addEventListener('click', function(event) {
@@ -364,6 +377,7 @@ $(document).ready(function() {
             });
         });
 
+
         document.addEventListener('click', function(event) {
             var target = event.target;
             if (!loginButton.contains(target) && !LOGIN_DIV.contains(target)) {
@@ -371,6 +385,10 @@ $(document).ready(function() {
             }
         });
     }
+
+    BACK_TO_TOP_DIV.addEventListener('click', function(event) {
+        SmoothScroll(0, 250);
+    });
 
     loadPage(document, window.location.pathname, true);
 });
