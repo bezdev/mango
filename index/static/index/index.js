@@ -388,6 +388,7 @@ $(document).ready(function() {
 
     BACK_TO_TOP_DIV.addEventListener('click', function(event) {
         SmoothScroll(0, 250);
+        setTimeout(() => { document.getElementById("search").focus(); }, 500);
     });
 
     loadPage(document, window.location.pathname, true);

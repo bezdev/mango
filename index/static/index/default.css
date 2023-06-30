@@ -196,6 +196,7 @@ input
 
 #back-to-top
 {
+    cursor: pointer;
     opacity: 0;
     transition: opacity 5s;
     position: fixed;
@@ -203,7 +204,7 @@ input
     width: 100px;
     padding: 10px;
     border: 3px solid var(--primary-color);
-    font: 150% arial, sans-serif;
+    font: 100% arial, sans-serif;
     font-weight: bold;
     color: var(--primary-color);
     background-color: var(--primary-bg-color);
