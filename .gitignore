@@ -2,7 +2,7 @@ mango.log
 .venv
 files
 prod
-static
+/static
 *config.json
 *.pyc
 **/__pycache__

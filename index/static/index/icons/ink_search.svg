@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="100"
+   height="100"
+   viewBox="0 0 26.458333 26.458333"
+   version="1.1"
+   id="svg5"
+   inkscape:version="1.2.2 (732a01da63, 2022-12-09)"
+   sodipodi:docname="ink_search.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     showgrid="true"
+     inkscape:zoom="16.24167"
+     inkscape:cx="91.646981"
+     inkscape:cy="90.785001"
+     inkscape:window-width="3840"
+     inkscape:window-height="2054"
+     inkscape:window-x="2869"
+     inkscape:window-y="-11"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1">
+    <inkscape:grid
+       type="xygrid"
+       id="grid16" />
+  </sodipodi:namedview>
+  <defs
+     id="defs2" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <path
+       id="path120"
+       style="display:inline;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:1.1981;stroke-dasharray:none;stroke-opacity:1"
+       d="M 20.567621,10.583341 A 9.9842829,9.9842851 0 0 1 10.583339,20.567627 9.9842829,9.9842851 0 0 1 0.59905593,10.583341 9.9842829,9.9842851 0 0 1 10.583339,0.59905593 9.9842829,9.9842851 0 0 1 20.567621,10.583341 Z"
+       inkscape:label="path120" />
+    <path
+       id="rect4739"
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.828403;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+       d="m 16.619914,18.840129 6.555481,6.55541 a 1.5875169,1.5874993 0 0 0 0.154934,0.17978 1.5875169,1.5874993 0 0 0 0.179783,0.154933 l 0.0073,0.0073 0.0015,-0.0015 a 1.5875169,1.5874993 0 0 0 2.056536,-0.16078 1.5875169,1.5874993 0 0 0 0.160782,-2.056512 l 0.0015,-0.0015 -0.0073,-0.0073 a 1.5875169,1.5874993 0 0 0 -0.155012,-0.179784 1.5875169,1.5874993 0 0 0 -0.177955,-0.153105 l -6.55731,-6.557157 z" />
+  </g>
+</svg>
