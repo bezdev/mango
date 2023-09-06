@@ -102,6 +102,30 @@ function GetRandomElementsBetween(count, min, max) {
     return result;
 }
 
+function HexToRGB(hex) {
+    const bigint = parseInt(hex.slice(1), 16);
+    const r = (bigint >> 16) & 255;
+    const g = (bigint >> 8) & 255;
+    const b = bigint & 255;
+
+    return [r, g, b];
+}
+
+function RGBToHex(r, g, b) {
+    return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
+}
+
+function InterpolateColor(start, end, factor) {
+    const [r1, g1, b1] = HexToRGB(start);
+    const [r2, g2, b2] = HexToRGB(end);
+
+    const r = Math.round(r1 + (r2 - r1) * factor);
+    const g = Math.round(g1 + (g2 - g1) * factor);
+    const b = Math.round(b1 + (b2 - b1) * factor);
+
+    return RGBToHex(r, g, b);
+}
+
 function PosOrNeg() {
     return Math.random() < 0.5 ? -1 : 1;
 }

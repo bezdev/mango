@@ -262,6 +262,7 @@ function NavBarButton(label, link) {
 
 $(document).ready(function() {
     HEADER_DIV = document.getElementById("header");
+    BANNER_CANVAS = document.getElementById("banner");
     SEARCH_RESULTS_DIV = document.getElementById("search-results");
     BODY_DIV = document.getElementById("body");
     NAVBAR_DIV = document.getElementById("navbar");
@@ -317,7 +318,10 @@ $(document).ready(function() {
         }
     });
 
-    Banner.getInstance().draw();
+
+    window.addEventListener('resize', function() {
+
+    });
 
     const headerHeight = HEADER_DIV.offsetHeight;
     let backToTopTimeout;
@@ -390,6 +394,8 @@ $(document).ready(function() {
         SmoothScroll(0, 250);
         setTimeout(() => { document.getElementById("search").focus(); }, 500);
     });
+
+    Banner.getInstance().draw();
 
     loadPage(document, window.location.pathname, true);
 });

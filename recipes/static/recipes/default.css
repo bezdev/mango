@@ -1,0 +1,43 @@
+.recipe h1 {
+    margin: 15px;
+    font: arial, sans-serif;
+    color: var(--header_one_color);
+}
+
+.recipe h2 {
+    margin: 15px;
+    font: arial, sans-serif;
+    color: var(--header_one_color);
+}
+
+.recipe p {
+    margin-left: 20px;
+    margin-right: 20px;
+    font: 100% arial, sans-serif;
+}
+
+.recipe table {
+    margin-left: 10px;
+}
+
+.recipe .quantity-span {
+    margin: 10px;
+    font: 100% arial, sans-serif;
+    color: red;
+}
+
+.recipe .unit-span {
+    margin: 10px;
+    font: 100% arial, sans-serif;
+    color: blue;
+}
+
+.recipe .food-span {
+    margin: 10px;
+    font: 100% arial, sans-serif;
+    color: green;
+}
+
+.recipe .step-ingredient-span {
+    color: green;
+}

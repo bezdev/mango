@@ -7,7 +7,7 @@
 
         <script bez-base type="text/javascript" src="{% static 'index/jquery-3.6.0.min.js' %}"></script>
         <script bez-base type="text/javascript" src="{% static 'index/bezutil.js' %}"></script>
-        <script bez-base type="text/javascript" src="{% static 'index/banner2.js' %}"></script>
+        <script bez-base type="text/javascript" src="{% static 'index/banner.js' %}"></script>
         <script bez-base type="text/javascript" src="{% static 'index/index.js' %}"></script>
         <script>
             loadSVGs([
@@ -26,14 +26,14 @@
                 <input id="search" type="text" value="" autofocus autocomplete="off"/>
                 <div id="search-results"></div>
             </div>
-            <div id="navbar">
+            <!-- <div id="navbar">
                 <div id="search-button"><span class="icon"></span><span class="icon-label">Search</span></div>
                 {% if user.is_authenticated %}
                 <div id="account-button"><span class="icon-label">{{ user.username }}</span></div>
                 {% else %}
                 <div id="login-button"><span class="icon-label">Login</span></div>
                 {% endif %}
-            </div>
+            </div> -->
             <div id="login">
                 <form id="login-form">
                     <input type="text" placeholder="user">
