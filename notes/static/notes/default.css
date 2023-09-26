@@ -2,7 +2,6 @@
     margin-top: 10px;
     margin-left: 15px;
     font: arial, sans-serif;
-    color: #11387d;
 }
 
 #notes a {
@@ -16,7 +15,6 @@
 }
 
 .toc-link:link, .toc-link.visited {
-    color: #11387d;
     text-decoration: none;
 }
 
@@ -55,7 +53,7 @@
 }
 
 .note ol {
-    margin-left: 0px;
+    margin-left: 20px;
     list-style: decimal;
     list-style-position: inside;
 }
@@ -70,21 +68,18 @@
     margin-top: 10px;
     margin-left: 10px;
     font: 200% arial, sans-serif;
-    color: #11387d;
 }
 
 .note > h2 {
     margin-top: 10px;
     margin-left: 15px;
     font: arial, sans-serif;
-    color: #11387d;;
 }
 
 .note > h3 {
     margin-top: 10px;
     margin-left: 15px;
     font: arial, sans-serif;
-    color: #11387d;;
 }
 
 .note pre {

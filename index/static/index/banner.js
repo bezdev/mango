@@ -1,7 +1,7 @@
 class Banner {
     constructor(id) {
         this.TREE_HEIGHT_RANGE = { min: 120, max: 150 };
-        this.TREE_NEEDLES_COUNT = 400;
+        this.TREE_NEEDLES_COUNT = 800;
 
         let canvas = document.getElementById(id);
         let computedStyle = window.getComputedStyle(canvas);
@@ -74,6 +74,7 @@ class Banner {
 
         // draw children
         this.context.lineWidth = 1;
+
         for (let i = 0; i < this.TREE_NEEDLES_COUNT; i++) {
             let branchStartHeight = GetRandomBetween(20, 100) / 100 * height;
             let branchStart = getEndPoint(x, y, angle, branchStartHeight);
@@ -81,18 +82,7 @@ class Banner {
             let branchEnd = getEndPoint(branchStart.x, branchStart.y, branchAngle, Math.pow(1 - branchStart.y / height, 2) * GetRandomBetween(40, 80));
             this.drawLine(branchStart.x, branchStart.y, branchEnd.x, branchEnd.y);
         }
-
         this.context.stroke();
-    }
-
-    drawSky() {
-        var gradientHeight = this.height;
-        var sky = this.context.createLinearGradient(0, 0, 0, gradientHeight);
-        sky.addColorStop(0, "#000000");
-        sky.addColorStop(.8, "#11387d");
-        sky.addColorStop(1, "#11387d");
-        this.context.fillStyle = sky;
-        this.context.fillRect(0, 0, this.width, gradientHeight);
     }
 
     drawTrees() {
@@ -122,6 +112,16 @@ class Banner {
                 );
             }
         }
+    }
+
+    drawSky() {
+        var gradientHeight = this.height;
+        var sky = this.context.createLinearGradient(0, 0, 0, gradientHeight);
+        sky.addColorStop(0, "#000000");
+        sky.addColorStop(.8, "#11387d");
+        sky.addColorStop(1, "#11387d");
+        this.context.fillStyle = sky;
+        this.context.fillRect(0, 0, this.width, gradientHeight);
     }
 
     draw() {

@@ -139,13 +139,15 @@ function loadPage(dom, url, isInitialLoad) {
         currentContentDiv.style.display = "none";
     }
 
-    for (let i = NAVBAR_DIV.children.length - 2; i > 0; i--) {
-        NAVBAR_DIV.removeChild(NAVBAR_DIV.children[i]);
-    }
-    if (url in currentNavBarButtons) {
-        currentNavBarButtons[url].forEach(function(v) {
-            NAVBAR_DIV.insertBefore(v, NAVBAR_DIV.lastElementChild);
-        });
+    if (NAVBAR_DIV) {
+        for (let i = NAVBAR_DIV.children.length - 2; i > 0; i--) {
+            NAVBAR_DIV.removeChild(NAVBAR_DIV.children[i]);
+        }
+        if (url in currentNavBarButtons) {
+            currentNavBarButtons[url].forEach(function(v) {
+                NAVBAR_DIV.insertBefore(v, NAVBAR_DIV.lastElementChild);
+            });
+        }
     }
 
     currentContentDiv = contentDiv;
@@ -331,7 +333,7 @@ $(document).ready(function() {
         let newHeight = headerHeight - BODY_DIV.scrollTop;
         if (newHeight < 0) newHeight = 0;
         HEADER_DIV.style.height = newHeight > 0 ? newHeight + "px" : "0";
-        BODY_DIV.style.height = `calc(100vh - ${(newHeight + 75)}px)`;
+        BODY_DIV.style.height = `calc(100vh - ${(newHeight + 25)}px)`;
         if (newHeight > 0) {
             Components.Show(HEADER_DIV);
         } else {
@@ -348,10 +350,13 @@ $(document).ready(function() {
         }, 2000);
     });
 
-    document.getElementById("search-button").addEventListener('click', function(event) {
-        SmoothScroll(0, 250);
-        setTimeout(() => { document.getElementById("search").focus(); }, 500);
-    });
+    let searchButton = document.getElementById("search-button")
+    if (searchButton) {
+        searchButton.addEventListener('click', function(event) {
+            SmoothScroll(0, 250);
+            setTimeout(() => { document.getElementById("search").focus(); }, 500);
+        });
+    }
 
     let loginButton = document.getElementById("login-button");
     if (loginButton) {

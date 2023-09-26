@@ -10,6 +10,27 @@ p
 {
     font-family: Verdana;
     text-align: justify;
+    color: var(--primary-text-color);
+}
+
+li
+{
+    color: var(--primary-text-color);
+}
+
+h1, h2, h3
+{
+    color: var(--primary-header-color);
+}
+
+a
+{
+    color: var(--primary-link-color);
+}
+
+code
+{
+    color: var(--primary-text-color);
 }
 
 body
@@ -67,7 +88,7 @@ input
 #search-results
 {
     position: absolute;
-    background-color: var(--primary-bg-color);
+    background-color: #f9f9f9;
     border: 2px solid var(--primary-color);
     border-top: 0;
     border-bottom-left-radius: 10px;
@@ -184,7 +205,7 @@ input
 
 #body
 {
-    height: calc(100vh - 325px);
+    height: calc(100vh - 275px);
     overflow: auto;
     position: relative;
     border-top: 3px solid var(--primary-color);
