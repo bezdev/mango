@@ -40,7 +40,7 @@ ignore = shutil.ignore_patterns(
     '.git*',
     'deploy.py',
     'prod*',
-    'files*',
+    'media*',
     '.venv*',
     '.vscode',
     'mango.log'
@@ -74,7 +74,7 @@ if (args.deploy):
     print('deleting files on server')
     cmds = [
         'cd ' + SERVER_DIRECTORY,
-        'find . ! -path "./.venv*" ! -path "./files*" ! -path "." ! -path ".." -type d -exec rm -f -r {} +',
+        'find . ! -path "./.venv*" ! -path "./media*" ! -path "." ! -path ".." -type d -exec rm -f -r {} +',
     ]
     result = subprocess.run(["ssh", SERVER_USER, " && ".join(cmds)], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
 

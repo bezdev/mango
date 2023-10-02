@@ -13,6 +13,7 @@ urlpatterns = [
     path('life/', include(('life.urls', 'life'), namespace='life')),
     path('notes/', include(('notes.urls', 'note'), namespace='notes')),
     path('recipes/', include(('recipes.urls', 'recipes'), namespace='recipes')),
+    path('clips/', include(('clips.urls', 'clips'), namespace='clips')),
     path('search', search_views.search, name = 'search'),
     path('api/v1/login', index_views.user_login),
     path('api/v1/bodybuilding', bodybuilding_views.api_v1_bodybuilding),

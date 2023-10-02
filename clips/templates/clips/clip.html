@@ -1,0 +1,36 @@
+{% extends "index/index.html" %}
+    {% block head %}
+    <meta property="og:title" content="{{ clip.name }}" />
+    <meta property="og:description" content="{{ clip.name }}" />
+    <meta property="og:type" content="video.other" />
+    <meta property="og:url" content="https://www.bezdev.com{{ clip.file.url }}" />
+    <meta property="og:video" content="https://www.bezdev.com{{ clip.file.url }}" />
+    <meta property="og:video:secure_url" content="https://www.bezdev.com{{ clip.file.url }}" />
+    <meta property="og:video:width" content="1920" />
+    <meta property="og:video:height" content="1080" />
+    <meta property="og:video:type" content="video/mp4" />
+    <meta name="twitter:card" content="player" />
+    <meta name="twitter:title" content="{{ clip.name }}" />
+    <meta name="twitter:description" content="{{ clip.name }}" />
+    <meta name="twitter:player" content="https://www.bezdev.com/media/clips/bob.mp4" />
+    <meta name="twitter:player:width" content="1920" />
+    <meta name="twitter:player:height" content="1080" />
+    <meta name="twitter:image" content="URL_TO_A_THUMBNAIL_IMAGE" />
+    <meta name="twitter:player:stream" content="https://www.bezdev.com/media/clips/bob.mp4" />
+    <meta name="twitter:player:stream:content_type" content="video/mp4" />
+
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'clips/default.css' %}" />
+
+    <script bez-on-load type="text/javascript">
+    </script>
+    {% endblock %}
+
+    {% block content %}
+    <div id="clip-{{ clip.code}}">
+        <h1>{{ clip.name }}</h1>
+        <video width="800" controls>
+            <source src="{{ clip.file.url }}" type="video/mp4">
+        </video>
+    </div>
+    {% endblock %}

@@ -3,7 +3,9 @@ server {
 
     location = /favicon.ico { access_log off; log_not_found off; }
 
-    location /files {
+    client_max_body_size 200M;
+
+    location /media/ {
         root /home/bez/projects/mango;
         access_log off;
     }
