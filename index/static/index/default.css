@@ -33,6 +33,11 @@ code
     color: var(--primary-text-color);
 }
 
+tr, td
+{
+    color: var(--primary-text-color);
+}
+
 body
 {
     background-color: var(--primary-bg-color);

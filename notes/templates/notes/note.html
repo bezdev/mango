@@ -14,12 +14,18 @@
             Note.createTOC('note-{{ note.name_slug }}');
 
             {% if user.is_authenticated %}
-            currentNavBarButtons[window.location.pathname] = [ NavBarButton("Edit", window.location.origin + "/admin/notes/note/{{note.id}}/change/") ];
+            let editLink = document.createElement('a');
+            editLink.textContent = 'EDIT';
+            editLink.href = window.location.origin + "/admin/notes/note/{{note.id}}/change/";
+            editLink.target = '_blank';
+
+            document.getElementById('note-nav').appendChild(editLink);
             {% endif %}
         {% endonload %}
     {% endblock %}
 
     {% block content %}
+        <div id="note-nav"></div>
         <div id="note-{{ note.name_slug }}" class="note">
             <h1><b>{{ note.name }}</b></h1>
             <div class="toc"></div>
