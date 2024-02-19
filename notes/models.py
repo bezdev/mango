@@ -3,6 +3,7 @@ Notes
 """
 from django.db import models
 from django.utils import timezone
+from django.utils.text import slugify
 
 class Note(models.Model):
     """
@@ -12,9 +13,24 @@ class Note(models.Model):
     name = models.CharField(max_length = 128, null = False)
     name_slug = models.SlugField(max_length = 128, null = False)
     text = models.TextField(max_length = 8192, null = False)
+    text_file = models.FileField(upload_to='notes', null = True)
+
+    def get_text(self):
+        if self.text_file:
+            with self.text_file.open('r') as file:
+                return file.read()
+
+        if self.text:
+            return self.text
+
+        return ""
 
     def __str__(self):
         return str(self.name)
+
+    def save(self, *args, **kwargs):
+        self.name_slug = slugify(self.name)
+        super(Note, self).save(*args, **kwargs)
 
 class Tag(models.Model):
     """
@@ -30,7 +46,7 @@ class File(models.Model):
     create_date = models.DateField(default = timezone.now)
     note = models.ForeignKey(Note, on_delete = models.CASCADE)
     name = models.CharField(max_length = 128, blank = True)
-    file = models.FileField(upload_to='notes', null = False)
+    file = models.FileField(upload_to='notes/files', null = False)
 
     def save(self, *args, **kwargs):
         if not self.name:

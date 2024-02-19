@@ -35,7 +35,6 @@ print('gather files')
 ignore = shutil.ignore_patterns(
     '*.pyc',
     '*__pycache__*',
-    '*migrations*',
     '*tests*',
     '.git*',
     'deploy.py',
