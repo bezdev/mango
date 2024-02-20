@@ -54,7 +54,7 @@ class NoteAdminForm(forms.ModelForm):
 @admin.register(Note)
 class NoteAdmin(admin.ModelAdmin):
     form = NoteAdminForm
-    fields = ('create_date', 'name', 'text_area')
+    fields = ('create_date', 'name', 'text_area', 'is_private')
     change_form_template = "notes/note_change_list.html"
     inlines = [
         TagInline,

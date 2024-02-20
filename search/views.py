@@ -21,12 +21,14 @@ def search(request):
         'results': [],
     }
 
+    # TODO: move these to the components
     if context.startswith('/recipes/'):
         for recipe in Recipe.objects.filter(name__icontains=query).values('name', 'name_slug'):
             results['results'].append({'text': recipe["name"], 'url': f'/recipes/{recipe["name_slug"]}/'})
 
     if context.startswith('/notes/'):
-        for note in Note.objects.filter(Q(name__icontains=query) | Q(text__search=query)).values('name', 'name_slug'):
+        notes = Note.get_notes(request.user)
+        for note in notes.filter(name__icontains=query).values('name', 'name_slug'):
             results['results'].append({'text': note["name"], 'url': f'/notes/{note["name_slug"]}/'})
 
     for site in PUBLIC_SITES:

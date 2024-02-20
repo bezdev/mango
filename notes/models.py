@@ -14,6 +14,14 @@ class Note(models.Model):
     name_slug = models.SlugField(max_length = 128, null = False)
     text = models.TextField(max_length = 8192, null = False)
     text_file = models.FileField(upload_to='notes', null = True)
+    is_private = models.BooleanField(default=False)
+
+    @classmethod
+    def get_notes(cls, user):
+        if user.is_authenticated:
+            return cls.objects.all()
+        else:
+            return cls.objects.filter(is_private=False)
 
     def get_text(self):
         if self.text_file:
