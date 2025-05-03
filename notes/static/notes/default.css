@@ -56,6 +56,10 @@
     font: 100% arial, sans-serif;
 }
 
+.note li {
+    margin-left: 20px;
+}
+
 .note ol {
     margin-left: 20px;
     list-style: decimal;
