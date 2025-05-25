@@ -44,6 +44,7 @@ class NoteAdminForm(forms.ModelForm):
             if instance.text_file and default_storage.exists(instance.text_file.name):
                 default_storage.delete(instance.text_file.name)
 
+            text_data = text_data.replace('\r\n', '\n').replace('\r', '\n')
             instance.text_file.save(filename, ContentFile(text_data), save=False)
 
         if commit:

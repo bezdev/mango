@@ -1,50 +1,44 @@
 @import "constants.css";
 
-*
-{
+* {
     margin: 0;
     padding: 0;
+    font-family: Verdana;
 }
 
-p
-{
-    font-family: Verdana;
+p {
     text-align: justify;
     color: var(--primary-text-color);
 }
 
-li
-{
+li {
     color: var(--primary-text-color);
 }
 
-h1, h2, h3
-{
+h1,
+h2,
+h3 {
     color: var(--primary-header-color);
 }
 
-a
-{
+a {
     color: var(--primary-link-color);
 }
 
-code
-{
+code {
     color: var(--primary-text-color);
 }
 
-tr, td
-{
+tr,
+td {
     color: var(--primary-text-color);
 }
 
-body
-{
+body {
     background-color: var(--primary-bg-color);
 }
 
-input
-{
+input {
     background: #f9f9f9;
     border-radius: 10px;
     border: 2px solid var(--primary-color);
@@ -57,15 +51,13 @@ input
     box-shadow: 0 4px 6px -5px hsl(0, 0%, 40%), inset 0px 4px 6px -6px hsl(0, 0%, 50%)
 }
 
-#page
-{
-    overflow:hidden;
+#page {
+    overflow: hidden;
     border-bottom: none;
     height: 100vh;
 }
 
-#header
-{
+#header {
     margin: 0 auto;
     width: 100%;
     max-width: 1000px;
@@ -74,15 +66,13 @@ input
     border-right: 3px solid var(--primary-color);
 }
 
-#header #banner
-{
+#header #banner {
     width: 100%;
     height: 150px;
     background-color: #000000;
 }
 
-#search
-{
+#search {
     margin: 10px auto 10px auto;
     height: 50px;
     width: 90%;
@@ -90,8 +80,7 @@ input
     font-weight: 900;
 }
 
-#search-results
-{
+#search-results {
     position: absolute;
     background-color: #f9f9f9;
     border: 2px solid var(--primary-color);
@@ -109,8 +98,7 @@ input
     visibility: hidden;
 }
 
-#search-results span
-{
+#search-results span {
     display: block;
     border-radius: 10px;
     padding: 10px;
@@ -119,8 +107,7 @@ input
     font-weight: 900;
 }
 
-#navbar
-{
+#navbar {
     display: flex;
     background-color: var(--primary-bg-color);
     position: sticky;
@@ -134,8 +121,7 @@ input
     border-right: 3px solid var(--primary-color);
 }
 
-#navbar > div
-{
+#navbar>div {
     cursor: pointer;
     display: flex;
     height: 50px;
@@ -143,37 +129,32 @@ input
     align-items: center;
 }
 
-#navbar > div:first-child
-{
+#navbar>div:first-child {
     padding-right: 10px;
 }
 
-#navbar > div:last-child
-{
+#navbar>div:last-child {
     border-left: 3px solid var(--primary-color);
     border-right: none;
     margin-left: auto;
     order: -1;
 }
 
-#navbar > div:hover
-{
+#navbar>div:hover {
     background-color: #99E4C4;
 }
 
-#navbar > div span
-{
+#navbar>div span {
     display: inline-block;
     vertical-align: middle;
 }
 
-#navbar #login-button, #navbar #account-button
-{
+#navbar #login-button,
+#navbar #account-button {
     order: 1;
 }
 
-#login
-{
+#login {
     z-index: 1;
     display: none;
     float: right;
@@ -182,47 +163,41 @@ input
     border: 3px solid var(--primary-color);
 }
 
-#login input[type="text"], #login input[type="password"]
-{
+#login input[type="text"],
+#login input[type="password"] {
     margin-bottom: 10px;
 }
 
-#login input[type="submit"]
-{
+#login input[type="submit"] {
     font-weight: bold;
     float: right;
 }
 
-.icon svg
-{
+.icon svg {
     margin: 10px;
     height: 30px;
     width: 30px;
 }
 
-.icon-label
-{
+.icon-label {
     margin: 10px;
     font: 150% arial, sans-serif;
     color: var(--primary-color);
     font-weight: bold;
 }
 
-#body
-{
+#body {
     height: calc(100vh - 275px);
     overflow: auto;
     position: relative;
     border-top: 3px solid var(--primary-color);
 }
 
-#body::-webkit-scrollbar
-{
+#body::-webkit-scrollbar {
     width: 0px;
 }
 
-#back-to-top
-{
+#back-to-top {
     cursor: pointer;
     opacity: 0;
     transition: opacity 5s;
@@ -240,8 +215,7 @@ input
     transform: translateX(-50%);
 }
 
-#content
-{
+#content {
     margin: 0 auto;
     height: auto;
     width: 1000px;
@@ -249,30 +223,26 @@ input
     text-align: left;
 }
 
-#footer
-{
+#footer {
     height: 17px;
     border-top: 3px solid var(--primary-bg-color);
     background-color: var(--primary-color);
 }
 
-#footer h4
-{
+#footer h4 {
     font: 85% arial, sans-serif;
     padding: 2px;
     text-align: center;
     color: #ffffff;
 }
 
-.navbar-sticky
-{
+.navbar-sticky {
     position: fixed;
     top: 0;
     padding-bottom: 3px;
     border-right: 3px solid var(--primary-color);
 }
 
-.icon-svg
-{
+.icon-svg {
     stroke: var(--primary-color);
 }
